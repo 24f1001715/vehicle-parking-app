@@ -13,7 +13,8 @@ db = SQLAlchemy(app)
 
 class Admin(db.Model):
     __tablename__ = 'admin'
-    email_id = db.Column(db.String(120), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)  # NEW auto-increment ID
+    email_id = db.Column(db.String(100), unique=True, nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(200), nullable=True)
@@ -21,7 +22,8 @@ class Admin(db.Model):
 
 class User(db.Model):
     __tablename__ = 'user'
-    email_id = db.Column(db.String(120), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)  # NEW auto-increment ID
+    email_id = db.Column(db.String(100), unique=True, nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(120), nullable=False)
     address = db.Column(db.String(200), nullable=True)

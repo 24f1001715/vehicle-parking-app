@@ -9,33 +9,6 @@ admin_bp = Blueprint('admin', __name__)
 @admin_bp.route('/admin/dashboard', methods=['GET', 'POST'])
 @admin_required
 def home():
-    if request.method == 'POST':
-        # 1. Collect form data
-        name = request.form['name']
-        address = request.form['address']
-        pin_code = request.form['pin_code']
-        price = request.form['price']
-        max_spots = int(request.form['max_spots'])
-
-        # 2. Create new parking lot
-        new_lot = ParkingLot(
-            prime_location_name=name,
-            address=address,
-            pin_code=pin_code,
-            price=float(price),
-            max_spots=max_spots
-        )
-        db.session.add(new_lot)
-        db.session.commit()
-
-        # 3. Add parking spots
-        for _ in range(max_spots):
-            spot = ParkingSpot(lot_id=new_lot.id)  # status defaults to 'A'
-            db.session.add(spot)
-        db.session.commit()
-
-        return redirect(url_for('admin.home'))
-
     lots = ParkingLot.query.all()
     return render_template('admin/home.html', lots=lots)
 
@@ -59,3 +32,34 @@ def summary():
 @admin_required
 def edit_profile():
     return render_template('admin/edit_profile.html')
+
+
+@admin_bp.route('/admin/add-lot', methods=['GET', 'POST'])
+@admin_required
+def add_lot():
+    if request.method == 'POST':
+        name = request.form['name']
+        address = request.form['address']
+        pin_code = request.form['pin_code']
+        price = request.form['price']
+        max_spots = int(request.form['max_spots'])
+
+        new_lot = ParkingLot(
+            prime_location_name=name,
+            address=address,
+            pin_code=pin_code,
+            price=float(price),
+            max_spots=max_spots
+        )
+        db.session.add(new_lot)
+        db.session.commit()
+
+        for _ in range(max_spots):
+            spot = ParkingSpot(lot_id=new_lot.id)
+            db.session.add(spot)
+        db.session.commit()
+
+        return redirect(url_for('admin.home'))
+
+    return render_template('admin/add_lot.html')
+
