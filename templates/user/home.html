@@ -1,0 +1,4 @@
+{% extends 'user/base_user.html' %}
+{% block content %}
+    <h2>Welcome {{ session.get('name', 'User') }}</h2>
+{% endblock %}
