@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head><title>Login</title></head>
-<body>
-    <h2>Login</h2>
-    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
-    <form method="POST">
-        Email: <input type="email" name="email" required><br>
-        Password: <input type="password" name="password" required><br>
-        <input type="submit" value="Login">
-    </form>
-    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up</a></p>
+<head><title>Login</title>
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+    <body>
+    <div class="form-container">
+        <h2>Login</h2>
+        {% if error %}<p class="error-message">{{ error }}</p>{% endif %}
+        <form method="POST">
+            <label>Email:</label>
+            <input type="email" name="email" required>
+
+            <label>Password:</label>
+            <input type="password" name="password" required>
+
+            <input type="submit" value="Login">
+        </form>
+        <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up</a></p>
+    </div>
 </body>
 </html>

@@ -1,3 +1,26 @@
 {% extends 'admin/base_admin.html' %}
 {% block title %}Users{% endblock %}
-{% block content %}<h2>User Management</h2>{% endblock %}
+{% block content %}
+<h2 class="page-title">Registered Users</h2>
+
+<table class="users-table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>Address</th>
+            <th>Pincode</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.email_id }}</td>
+            <td>{{ user.fullname }}</td>
+            <td>{{ user.address }}</td>
+            <td>{{ user.pincode }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

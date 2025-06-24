@@ -1,15 +1,167 @@
 body {
     font-family: Arial, sans-serif;
 }
+
+/* ---------------- navbar ---------------- */
+
 .navbar {
-    background-color: #f0f0f0;
-    padding: 10px;
+        position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #f8f9fa;
+    padding: 10px 28px; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
 }
+
+.navbar .logo {
+    background-color: #007bff; /* Blue box */
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 0;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 20px;
+}
+.nav-links a.logout-link:hover {
+    color: red; /* Red hover only for logout */
+}
+
 .navbar a {
-    margin: 0 10px;
     text-decoration: none;
     color: #333;
+    font-weight: 500;
+    transition: color 0.2s ease;
 }
+
+.navbar a:hover,
+.navbar a.active {
+    color: #007bff; /* Blue on hover or active */
+}
+
 .content {
-    padding: 20px;
+    padding: 70px 24px 24px;
+}
+
+/* ---------------- FORM STYLING ---------------- */
+
+.form-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+input[type="submit"] {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
+    color: #555;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+/* ---------------- admin.users ---------------- */
+
+.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+.users-table th,
+.users-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.users-table thead {
+    background-color: #f2f2f2;
+}
+
+.users-table tr:nth-child(even) {
+    background-color: #fafafa;
 }
