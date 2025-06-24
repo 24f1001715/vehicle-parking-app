@@ -39,3 +39,8 @@ def register():
         db.session.commit()
         return redirect(url_for('auth.login'))
     return render_template('register.html')
+
+@auth_bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('auth.login'))

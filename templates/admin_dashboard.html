@@ -27,5 +27,7 @@
     {% else %}
         <p>No users registered yet.</p>
     {% endif %}
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+
 </body>
 </html>
