@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register</title></head>
+<body>
+    <h2>Register</h2>
+    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+    <form method="POST">
+        Full Name: <input type="text" name="fullname" required><br>
+        Email: <input type="email" name="email" required><br>
+        Password: <input type="password" name="password" required><br>
+        Address: <input type="text" name="address"><br>
+        Pincode: <input type="text" name="pincode"><br>
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>

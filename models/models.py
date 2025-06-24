@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.sqlite3'
@@ -11,15 +13,19 @@ db = SQLAlchemy(app)
 
 class Admin(db.Model):
     __tablename__ = 'admin'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    email_id = db.Column(db.String(120), primary_key=True)
+    fullname = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    address = db.Column(db.String(200), nullable=True)
+    pincode = db.Column(db.String(10), nullable=True)
 
 class User(db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    email_id = db.Column(db.String(120), primary_key=True)
+    fullname = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    address = db.Column(db.String(200), nullable=True)
+    pincode = db.Column(db.String(10), nullable=True)
 
 class ParkingLot(db.Model):
     __tablename__ = 'parking_lot'
@@ -35,14 +41,14 @@ class ParkingSpot(db.Model):
     __tablename__ = 'parking_spot'
     id = db.Column(db.Integer, primary_key=True)
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
-    status = db.Column(db.String(1), default='A')  # A for Available, R for Reserved
+    status = db.Column(db.String(1), default='A')  # A = Available, R = Reserved
     reservation = db.relationship('Reservation', backref='spot', uselist=False)
 
 class Reservation(db.Model):
     __tablename__ = 'reservation'
     id = db.Column(db.Integer, primary_key=True)
     spot_id = db.Column(db.Integer, db.ForeignKey('parking_spot.id'), nullable=False, unique=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_email = db.Column(db.String(120), db.ForeignKey('user.email_id'), nullable=False)
     parking_timestamp = db.Column(db.String(50), nullable=False)
     leaving_timestamp = db.Column(db.String(50), nullable=True)
     cost_per_hour = db.Column(db.Float)
@@ -56,12 +62,24 @@ if __name__ == '__main__':
 
         # Add a default admin
         if not Admin.query.first():
-            admin = Admin(username="superadmin", password="securepassword")
+            admin = Admin(
+                email_id="admin@example.com",
+                fullname="Super Admin",
+                password=generate_password_hash("12345678"),
+                address="Admin HQ",
+                pincode="600000"
+            )
             db.session.add(admin)
 
         # Add a sample user
         if not User.query.first():
-            user1 = User(username="vicky", password="securepassword")
+            user1 = User(
+                email_id="vicky@example.com",
+                fullname="Vicky",
+                password=generate_password_hash("12345678"),
+                address="123 User Lane",
+                pincode="600001"
+            )
             db.session.add(user1)
 
         # Optional: Add a sample parking lot and spot
