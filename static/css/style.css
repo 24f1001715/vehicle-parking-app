@@ -17,6 +17,7 @@ body {
     border-bottom: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     z-index: 1000;
+    margin: 0;
 }
 
 .navbar .logo {
@@ -50,8 +51,25 @@ body {
 }
 
 .content {
-    padding: 70px 24px 24px;
+    padding: 70px 24px 80px;
+    
 }
+
+/* ---------------- HOME  ---------------- */
+.fixed-action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #f8f9fa;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+    border-top: 1px solid #ccc;
+    z-index: 999;
+}
+
 
 /* ---------------- FORM STYLING ---------------- */
 
@@ -154,7 +172,16 @@ a:hover {
     margin: 0 auto; /* Center the table horizontally */
     margin-bottom: 30px; /* Add space below table for buttons */
 }
-
+.users-table thead th {
+    position: sticky;
+    top: 60px; /* adjust based on navbar height */
+    background: #007bff;
+    z-index: 8;
+    padding: 20px;
+    color: white;
+    font-weight: bold;
+    margin-top: 0;
+}
 
 .users-table th,
 .users-table td {
@@ -194,6 +221,7 @@ a:hover {
 
 .btn:hover {
     background-color: #0056b3;
+    text-decoration: none;
 }
 
 .cancel {
@@ -202,4 +230,59 @@ a:hover {
 
 .cancel:hover {
     background-color: #c0392b;
+}
+
+/* ---------------- admin.dash.viewlot ---------------- */
+.lot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.spot-box {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;  /* Change to pointer for better UX */
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.available {
+    background-color: green;
+    text-decoration: none;
+}
+
+.available:hover {
+    background-color: darkgreen;
+    text-decoration: none;
+}
+
+.reserved {
+    background-color: red;
+    text-decoration: none;
+}
+
+.reserved:hover {
+    background-color: darkred;
+    text-decoration: none;
+}
+
+.spot-box.add-spot {
+    background-color: #ccc;
+    color: black;
+    font-size: 24px;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+}
+
+.spot-box.add-spot:hover {
+    background-color: #999;
+    text-decoration: none;
 }

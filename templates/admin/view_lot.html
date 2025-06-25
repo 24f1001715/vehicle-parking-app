@@ -1,0 +1,27 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}View Parking Lot{% endblock %}
+
+{% block content %}
+<h2>Parking Lot: {{ lot.prime_location_name }}</h2>
+
+<div class="lot-grid">
+    {% for spot in lot.spots %}
+    {% if spot.status == 'A' %}
+      <a href="{{ url_for('admin.spot_delete', spot_id=spot.id) }}" class="spot-box available">
+        {{ spot.spot_number }}
+      </a>
+    {% else %}
+      <div class="spot-box reserved">{{ spot.spot_number }}</div>
+    {% endif %}
+  {% endfor %}
+ <!-- Add spot button -->
+<div class="spot-box add-spot" onclick="window.location.href='{{ url_for('admin.add_spot', lot_id=lot.id) }}'">
+  +
+</div>
+
+</div>
+
+<a href="{{ url_for('admin.home') }}">
+  <button class="btn" style="margin-top: 20px;">Back to Dashboard</button>
+</a>
+{% endblock %}

@@ -13,6 +13,7 @@
             <th>Pincode</th>
             <th>Price (₹/hr)</th>
             <th>Max Spots</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -24,17 +25,26 @@
             <td>{{ lot.pin_code }}</td>
             <td>{{ lot.price }}</td>
             <td>{{ lot.max_spots }}</td>
+            <td>
+             <a href="{{ url_for('admin.view_lot', lot_id=lot.id) }}" class="btn" style="font-size: 14px;margin: 0 5px; padding: 8px 30px; display: inline-block; text-align: center;">
+  View
+</a>
+            <a href="{{ url_for('admin.edit_lot', lot_id=lot.id) }}" class="btn" style="font-size: 14px;margin: 0 5px; padding: 8px 30px; display: inline-block; text-align: center;">
+  Edit
+</a>
+            </td>
+
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
-<div class="button-group">
+<div class="fixed-action-bar">
+<div class="button-group" style="margin: 0px 0 10px 0;">
 <a href="{{ url_for('admin.add_lot') }}">
   <button class="btn">Add New Parking Lot</button>
 </a>
 <a href="{{ url_for('admin.delete_parking_lots') }}">
     <button type="button" class="btn cancel">Delete Parking Lots</button>
 </a>
-</div>
+</div></div>
 {% endblock %}
