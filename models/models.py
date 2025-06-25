@@ -2,7 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -13,7 +12,7 @@ db = SQLAlchemy(app)
 
 class Admin(db.Model):
     __tablename__ = 'admin'
-    id = db.Column(db.Integer, primary_key=True)  # NEW auto-increment ID
+    id = db.Column(db.Integer, primary_key=True)
     email_id = db.Column(db.String(100), unique=True, nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(120), nullable=False)
@@ -22,7 +21,7 @@ class Admin(db.Model):
 
 class User(db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)  # NEW auto-increment ID
+    id = db.Column(db.Integer, primary_key=True)
     email_id = db.Column(db.String(100), unique=True, nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(120), nullable=False)
@@ -38,11 +37,13 @@ class ParkingLot(db.Model):
     price = db.Column(db.Float, nullable=False)
     max_spots = db.Column(db.Integer, nullable=False)
     spots = db.relationship('ParkingSpot', backref='lot', cascade="all, delete", lazy=True)
+    reservations = db.relationship('Reservation', backref='lot', lazy=True)
 
 class ParkingSpot(db.Model):
     __tablename__ = 'parking_spot'
     id = db.Column(db.Integer, primary_key=True)
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
+    spot_number = db.Column(db.Integer, nullable=False)  # Sequential number per lot
     status = db.Column(db.String(1), default='A')  # A = Available, R = Reserved
     reservation = db.relationship('Reservation', backref='spot', uselist=False)
 
@@ -50,16 +51,19 @@ class Reservation(db.Model):
     __tablename__ = 'reservation'
     id = db.Column(db.Integer, primary_key=True)
     spot_id = db.Column(db.Integer, db.ForeignKey('parking_spot.id'), nullable=False, unique=True)
+    lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
     user_email = db.Column(db.String(120), db.ForeignKey('user.email_id'), nullable=False)
     parking_timestamp = db.Column(db.String(50), nullable=False)
     leaving_timestamp = db.Column(db.String(50), nullable=True)
     cost_per_hour = db.Column(db.Float)
+
     user = db.relationship('User', backref='reservations')
 
 # ------------------------ Database Initialization ------------------------
 
 if __name__ == '__main__':
     with app.app_context():
+        db.drop_all()  # Only use this if you want to recreate everything
         db.create_all()
 
         # Add a default admin
@@ -84,7 +88,7 @@ if __name__ == '__main__':
             )
             db.session.add(user1)
 
-        # Optional: Add a sample parking lot and spot
+        # Optional: Add a sample parking lot and spots
         if not ParkingLot.query.first():
             lot = ParkingLot(
                 prime_location_name="Central Mall",
@@ -96,9 +100,8 @@ if __name__ == '__main__':
             db.session.add(lot)
             db.session.commit()
 
-            # Add 10 spots for the lot
-            for _ in range(10):
-                spot = ParkingSpot(lot_id=lot.id)
+            for i in range(1, lot.max_spots + 1):
+                spot = ParkingSpot(lot_id=lot.id, spot_number=i)
                 db.session.add(spot)
 
         db.session.commit()

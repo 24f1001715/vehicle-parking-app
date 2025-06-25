@@ -29,10 +29,12 @@
     </tbody>
 </table>
 
-
+<div class="button-group">
 <a href="{{ url_for('admin.add_lot') }}">
   <button class="btn">Add New Parking Lot</button>
 </a>
-
-
+<a href="{{ url_for('admin.delete_parking_lots') }}">
+    <button type="button" class="btn cancel">Delete Parking Lots</button>
+</a>
+</div>
 {% endblock %}

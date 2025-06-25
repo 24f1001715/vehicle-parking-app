@@ -54,8 +54,8 @@ def add_lot():
         db.session.add(new_lot)
         db.session.commit()
 
-        for _ in range(max_spots):
-            spot = ParkingSpot(lot_id=new_lot.id)
+        for i in range(1, new_lot.max_spots + 1):
+            spot = ParkingSpot(lot_id=new_lot.id, spot_number=i)
             db.session.add(spot)
         db.session.commit()
 
@@ -63,3 +63,18 @@ def add_lot():
 
     return render_template('admin/add_lot.html')
 
+@admin_bp.route('/admin/delete-lots', methods=['GET', 'POST'])
+@admin_required
+def delete_parking_lots():
+    if request.method == 'POST':
+        selected_ids = request.form.getlist('lot_ids')
+        if selected_ids:
+            for lot_id in selected_ids:
+                lot = ParkingLot.query.get(int(lot_id))
+                if lot:
+                    db.session.delete(lot)
+            db.session.commit()
+            return redirect(url_for('admin.home'))
+    
+    lots = ParkingLot.query.all()
+    return render_template('admin/delete_lots.html', lots=lots)
