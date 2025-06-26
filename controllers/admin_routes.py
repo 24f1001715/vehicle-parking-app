@@ -12,7 +12,15 @@ admin_bp = Blueprint('admin', __name__)
 @admin_required
 def home():
     lots = ParkingLot.query.all()
-    return render_template('admin/home.html', lots=lots)
+    availability = dict(
+        db.session.query(
+            ParkingSpot.lot_id,
+            func.count().label('available_count')
+        ).filter(ParkingSpot.status == 'A')
+         .group_by(ParkingSpot.lot_id)
+         .all()
+    )
+    return render_template('admin/home.html', lots=lots, availability=availability)
 
 @admin_bp.route('/admin/users')
 @admin_required
