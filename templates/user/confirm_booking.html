@@ -1,0 +1,34 @@
+{% extends 'user/base_user.html' %}
+{% block title %}Confirm Booking{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2>Confirm Booking</h2>
+
+  <form method="POST">
+    <!-- Lot ID (Read-only) -->
+    <label>Lot ID:</label>
+    <input type="text" value="{{ lot.id }}" readonly>
+
+    <!-- Spot ID (Read-only) -->
+    <label>Spot ID:</label>
+    <input type="text" value="{{ spot.id }}" readonly>
+
+    <!-- User Email (Read-only) -->
+    <label>Your Email:</label>
+    <input type="text" value="{{ user_email }}" readonly>
+
+    <!-- Vehicle Number -->
+    <label>Vehicle Number:</label>
+    <input type="text" name="vehicle_number" placeholder="Enter your vehicle number" required>
+
+    <!-- Action Buttons -->
+    <div class="button-group" style="justify-content: space-between;">
+      <a href="{{ url_for('user.book') }}">
+        <button type="button" class="btn cancel">Cancel</button>
+      </a>
+      <button type="submit" class="btn">Book</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

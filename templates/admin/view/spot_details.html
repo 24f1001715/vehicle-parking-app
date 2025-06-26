@@ -1,0 +1,32 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Spot Details{% endblock %}
+
+{% block content %}
+
+
+<div class="form-container">
+    <h2 style="text-align: center;">Spot #{{ spot.spot_number }} Details</h2>
+  <form>
+    <label>Lot Name:</label>
+    <div class="readonly-field">{{ spot.lot.prime_location_name }}</div>
+
+    <label>Customer Email:</label>
+    <div class="readonly-field">{{ reservation.user_email }}</div>
+
+    <label>Vehicle Number:</label>
+    <div class="readonly-field">{{ reservation.vehicle_number }}</div>
+
+    <label>Parked At:</label>
+    <div class="readonly-field">{{ reservation.parking_timestamp }}</div>
+
+    <label>Price (₹/hr):</label>
+    <div class="readonly-field">₹{{ reservation.cost_per_hour }}</div>
+
+    <div class="button-group" style="margin-top: 25px;">
+      <a href="{{ url_for('admin.view_lot', lot_id=spot.lot_id) }}">
+        <button type="button" class="btn cancel">Close</button>
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

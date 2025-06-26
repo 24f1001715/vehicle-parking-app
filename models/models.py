@@ -50,14 +50,32 @@ class ParkingSpot(db.Model):
 class Reservation(db.Model):
     __tablename__ = 'reservation'
     id = db.Column(db.Integer, primary_key=True)
-    spot_id = db.Column(db.Integer, db.ForeignKey('parking_spot.id'), nullable=False, unique=True)
-    lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
-    user_email = db.Column(db.String(120), db.ForeignKey('user.email_id'), nullable=False)
+    
+    spot_id = db.Column(
+        db.Integer,
+        db.ForeignKey('parking_spot.id', ondelete='SET DEFAULT'),
+        nullable=True,
+        default=0
+    )
+    lot_id = db.Column(
+        db.Integer,
+        db.ForeignKey('parking_lot.id', ondelete='SET DEFAULT'),
+        nullable=True,
+        default=0
+    )
+    user_email = db.Column(
+        db.String(120),
+        db.ForeignKey('user.email_id'),
+        nullable=False
+    )
     parking_timestamp = db.Column(db.String(50), nullable=False)
     leaving_timestamp = db.Column(db.String(50), nullable=True)
     cost_per_hour = db.Column(db.Float)
+    total_cost = db.Column(db.Float, nullable=True)
+    vehicle_number = db.Column(db.String(20), nullable=False, default='Unknown')
 
     user = db.relationship('User', backref='reservations')
+
 
 # ------------------------ Database Initialization ------------------------
 

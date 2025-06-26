@@ -1,0 +1,69 @@
+{% extends 'user/base_user.html' %}
+{% block title %}Confirm Release{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 600px;">
+  <h2 style="text-align: center;">Confirm Release</h2>
+
+  <form method="POST" action="{{ url_for('user.release_spot_confirm', reservation_id=reservation.id) }}">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Lot:</label>
+        <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ reservation.lot.id }}" readonly>
+      </div>
+      <div class="form-group">
+        <label>Spot Number:</label>
+        <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ reservation.spot.spot_number }}" readonly>
+      </div>
+    </div>
+
+    <div class="form-group-full">
+      <label>Vehicle Number:</label>
+      <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ reservation.vehicle_number }}" readonly>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Parked At:</label>
+        <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ start }}" readonly>
+      </div>
+      <div class="form-group">
+        <label>Current Time:</label>
+        <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ now }}" readonly>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Duration (hrs):</label>
+        <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ duration }}" readonly>
+      </div>
+      <div class="form-group">
+        <label>Cost per Hour (₹):</label>
+        <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ reservation.cost_per_hour }}" readonly>
+      </div>
+    </div>
+
+    <div class="form-group-full">
+      <label>Estimated Cost (₹):</label>
+      <input type="text" style="background-color: #f2f2f2;
+    border: 1px solid #ccc;" value="{{ estimated_cost }}" readonly>
+    </div>
+
+    <div class="button-group" >
+      <a href="{{ url_for('user.home') }}">
+        <button type="button" class="btn">Cancel</button>
+      </a>
+      <button class="btn cancel" type="submit">Release</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

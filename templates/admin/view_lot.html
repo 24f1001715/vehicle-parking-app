@@ -11,7 +11,9 @@
         {{ spot.spot_number }}
       </a>
     {% else %}
-      <div class="spot-box reserved">{{ spot.spot_number }}</div>
+      <a href="{{ url_for('admin.spot_details', spot_id=spot.id) }}" class="spot-box reserved">
+        {{ spot.spot_number }}
+      </a>
     {% endif %}
   {% endfor %}
  <!-- Add spot button -->

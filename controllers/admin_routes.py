@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, url_for
 from utils.decorators import admin_required
-from models.models import User, ParkingLot, ParkingSpot, db, Admin
+from models.models import User, ParkingLot, ParkingSpot, db, Admin, Reservation
+from flask import flash
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
@@ -175,3 +176,15 @@ def add_spot(lot_id):
 
     db.session.commit()
     return redirect(url_for('admin.view_lot', lot_id=lot.id))
+
+@admin_bp.route('/admin/spot/<int:spot_id>/details')
+@admin_required
+def spot_details(spot_id):
+    spot = ParkingSpot.query.get_or_404(spot_id)
+    reservation = Reservation.query.filter_by(spot_id=spot_id).order_by(Reservation.id.desc()).first()
+
+    if not reservation:
+        flash('No reservation found for this spot.', 'warning')
+        return redirect(url_for('admin.view_lot', lot_id=spot.lot_id))
+
+    return render_template('admin/view/spot_details.html', spot=spot, reservation=reservation)
