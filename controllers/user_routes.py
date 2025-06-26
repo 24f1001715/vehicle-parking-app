@@ -65,7 +65,60 @@ def home():
 @user_bp.route('/user/summary')
 @user_required
 def summary():
-    return render_template('user/summary.html')
+    user_email = session.get("user")
+
+    # Query all reservations of the user
+    reservations = Reservation.query.filter_by(user_email=user_email).all()
+
+    # Booking counts and costs per day (last 7 days)
+    from datetime import datetime, timedelta
+    from collections import defaultdict
+    from sqlalchemy import func
+
+    today = datetime.now().date()
+    start_date = today - timedelta(days=6)
+    trend_labels = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
+
+    count_map = defaultdict(int)
+    cost_map = defaultdict(float)
+    lot_count = defaultdict(int)
+    reserved_count = 0
+    completed_count = 0
+
+    for r in reservations:
+        try:
+            date_key = datetime.strptime(r.parking_timestamp, '%Y-%m-%d %H:%M:%S').date().strftime('%Y-%m-%d')
+        except:
+            continue  # Skip if date is bad
+
+        if date_key in trend_labels:
+            count_map[date_key] += 1
+            cost_map[date_key] += r.total_cost if r.total_cost else 0
+
+        if r.leaving_timestamp:
+            completed_count += 1
+        else:
+            reserved_count += 1
+
+        lot = ParkingLot.query.get(r.lot_id)
+        if lot:
+            lot_count[lot.prime_location_name] += 1
+
+    booking_counts = [count_map[day] for day in trend_labels]
+    costs = [cost_map[day] for day in trend_labels]
+
+    lot_names = list(lot_count.keys())
+    lot_usage = list(lot_count.values())
+
+    return render_template('user/summary.html',
+                           trend_labels=trend_labels,
+                           booking_counts=booking_counts,
+                           costs=costs,
+                           lot_names=lot_names,
+                           lot_usage=lot_usage,
+                           reserved_count=reserved_count,
+                           completed_count=completed_count)
+
 
 
 

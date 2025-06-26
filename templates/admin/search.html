@@ -1,3 +1,59 @@
 {% extends 'admin/base_admin.html' %}
-{% block title %}Search{% endblock %}
-{% block content %}<h2>Search Page</h2>{% endblock %}
+{% block title %}Admin Search{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Advanced Search</h2>
+
+  <form method="GET" action="{{ url_for('admin.search') }}" class="d-flex gap-2 mb-4">
+    <select name="filter_by" class="form-select" required>
+      <option value="" disabled selected>Search by</option>
+      <option value="user_email">User Email</option>
+      <option value="vehicle_number">Vehicle Number</option>
+      <option value="lot_name">Parking Lot</option>
+      <option value="spot_id">Spot ID</option>
+      <option value="reservation_id">Reservation ID</option>
+    </select>
+
+    <input type="text" name="query" class="form-control" placeholder="Search..." required>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  {% if results is not none %}
+    {% if results %}
+      <h5>Search Results:</h5>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Reservation ID</th>
+            <th>User</th>
+            <th>Vehicle</th>
+            <th>Lot</th>
+            <th>Spot ID</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Total Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.user_email }}</td>
+            <td>{{ r.vehicle_number }}</td>
+            <td>{{ r.lot.prime_location_name }}</td>
+            <td>{{ r.spot_id }}</td>
+            <td>{{ r.parking_timestamp }}</td>
+            <td>{{ r.leaving_timestamp or 'In Progress' }}</td>
+            <td>{{ r.total_cost or 'Calculating...' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-warning">No matching records found.</div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

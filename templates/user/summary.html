@@ -1,4 +1,99 @@
 {% extends 'user/base_user.html' %}
+{% block title %}User Summary{% endblock %}
+
 {% block content %}
-    <h2>Summary Page</h2>
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Your Parking Summary</h2>
+
+  <!-- Line Chart: Bookings Over Time -->
+  <div class="mb-5">
+    <h4 class="text-center">Booking Trend (Last 7 Days)</h4>
+    <canvas id="bookingTrendChart" height="100"></canvas>
+  </div>
+
+  <!-- Bar Chart: Cost Over Time -->
+  <div class="mb-5">
+    <h4 class="text-center">Cost Incurred (Last 7 Days)</h4>
+    <canvas id="costChart" height="100"></canvas>
+  </div>
+
+  <!-- Bar Chart: Most Used Parking Lots -->
+  <div class="mb-5">
+    <h4 class="text-center">Most Frequently Used Parking Lots</h4>
+    <canvas id="lotUsageChart" height="100"></canvas>
+  </div>
+
+  <!-- Pie Chart: Reservation Status -->
+  <div class="mb-5">
+    <h4 class="text-center">Reservation Status</h4>
+    <canvas id="statusChart" height="100"></canvas>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const trendLabels = {{ trend_labels | tojson }};
+  const bookingCounts = {{ booking_counts | tojson }};
+  const costs = {{ costs | tojson }};
+  const lotNames = {{ lot_names | tojson }};
+  const lotUsage = {{ lot_usage | tojson }};
+  const reserved = {{ reserved_count }};
+  const completed = {{ completed_count }};
+
+  // Booking Trend Chart
+  new Chart(document.getElementById('bookingTrendChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: trendLabels,
+      datasets: [{
+        label: 'Bookings',
+        data: bookingCounts,
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        tension: 0.3,
+        fill: true
+      }]
+    }
+  });
+
+  // Cost Chart
+  new Chart(document.getElementById('costChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: trendLabels,
+      datasets: [{
+        label: 'Cost (₹)',
+        data: costs,
+        backgroundColor: 'rgba(255, 159, 64, 0.6)'
+      }]
+    }
+  });
+
+  // Lot Usage Chart
+  new Chart(document.getElementById('lotUsageChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: lotNames,
+      datasets: [{
+        label: 'Times Used',
+        data: lotUsage,
+        backgroundColor: 'rgba(153, 102, 255, 0.6)'
+      }]
+    }
+  });
+
+  // Reservation Status Chart
+  new Chart(document.getElementById('statusChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Reserved', 'Completed'],
+      datasets: [{
+        data: [reserved, completed],
+        backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(75, 192, 192, 0.6)']
+      }]
+    }
+  });
+</script>
 {% endblock %}

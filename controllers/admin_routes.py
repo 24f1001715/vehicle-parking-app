@@ -28,15 +28,124 @@ def users():
     all_users = User.query.all()
     return render_template('admin/users.html', users=all_users)
 
+from flask import request, render_template
+from models.models import Reservation, ParkingLot, ParkingSpot
+from sqlalchemy.orm import joinedload
+
 @admin_bp.route('/admin/search')
 @admin_required
 def search():
-    return render_template('admin/search.html')
+    filter_by = request.args.get("filter_by")
+    query = request.args.get("query")
+    results = None
+
+    if filter_by and query:
+        q = query.strip()
+
+        if filter_by == "user_email":
+            results = Reservation.query.filter(Reservation.user_email.ilike(f"%{q}%"))\
+                .options(joinedload(Reservation.lot)).all()
+
+        elif filter_by == "vehicle_number":
+            results = Reservation.query.filter(Reservation.vehicle_number.ilike(f"%{q}%"))\
+                .options(joinedload(Reservation.lot)).all()
+
+        elif filter_by == "lot_name":
+            lot_ids = ParkingLot.query.filter(ParkingLot.prime_location_name.ilike(f"%{q}%")).with_entities(ParkingLot.id).all()
+            lot_ids = [id for (id,) in lot_ids]
+            results = Reservation.query.filter(Reservation.lot_id.in_(lot_ids))\
+                .options(joinedload(Reservation.lot)).all()
+
+        elif filter_by == "spot_id":
+            try:
+                spot_id = int(q)
+                results = Reservation.query.filter_by(spot_id=spot_id)\
+                    .options(joinedload(Reservation.lot)).all()
+            except ValueError:
+                results = []
+
+        elif filter_by == "reservation_id":
+            try:
+                rid = int(q)
+                results = Reservation.query.filter_by(id=rid)\
+                    .options(joinedload(Reservation.lot)).all()
+            except ValueError:
+                results = []
+
+    return render_template('admin/search.html', results=results)
+
+
+from collections import defaultdict
+from datetime import datetime, timedelta
+from sqlalchemy import func
 
 @admin_bp.route('/admin/summary')
 @admin_required
 def summary():
-    return render_template('admin/summary.html')
+    lots = ParkingLot.query.all()
+
+    lot_names = []
+    total_spots = []
+    available_spots = []
+    reserved_spots = []
+
+    for lot in lots:
+        lot_names.append(lot.prime_location_name)
+        total = len(lot.spots)
+        reserved = sum(1 for spot in lot.spots if spot.status == 'R')
+        available = total - reserved
+
+        total_spots.append(total)
+        reserved_spots.append(reserved)
+        available_spots.append(available)
+
+    # --- Booking Trends (last 7 days) ---
+    today = datetime.now().date()
+    start_date = today - timedelta(days=6)
+
+    reservations = (
+        db.session.query(
+            func.date(Reservation.parking_timestamp).label('date'),
+            func.count().label('count'),
+            func.sum(Reservation.total_cost).label('revenue')
+        )
+        .filter(func.date(Reservation.parking_timestamp) >= start_date)
+        .group_by(func.date(Reservation.parking_timestamp))
+        .order_by(func.date(Reservation.parking_timestamp))
+        .all()
+    )
+
+    # Initialize dicts with all dates to show zero even on no-booking days
+    trend_labels = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
+    booking_counts = []
+    revenues = []
+
+    res_map = {str(row.date): row for row in reservations}
+    for day in trend_labels:
+        row = res_map.get(day)
+        booking_counts.append(row.count if row else 0)
+        revenues.append(float(row.revenue) if row and row.revenue else 0)
+
+    # Revenue per lot
+    revenue_per_lot = []
+    for lot in lots:
+        revenue = db.session.query(db.func.sum(Reservation.total_cost))\
+            .filter(Reservation.lot_id == lot.id).scalar()
+        revenue_per_lot.append(float(revenue) if revenue else 0)
+
+
+    return render_template(
+        'admin/summary.html',
+        lot_names=lot_names,
+        total_spots=total_spots,
+        reserved_spots=reserved_spots,
+        available_spots=available_spots,
+        trend_labels=trend_labels,
+        booking_counts=booking_counts,
+        revenues=revenues, 
+        revenue_per_lot=revenue_per_lot
+    )
+
 
 @admin_bp.route('/admin/edit-profile', methods=['GET', 'POST'])
 @admin_required

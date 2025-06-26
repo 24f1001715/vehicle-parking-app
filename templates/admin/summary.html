@@ -1,4 +1,195 @@
 {% extends 'admin/base_admin.html' %}
+{% block title %}Admin Summary{% endblock %}
 
-{% block title %}Summary{% endblock %}
-{% block content %}<h2>Summary Page</h2>{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Parking Management Summary</h2>
+
+  <!-- Bar Chart -->
+  <div class="mb-5">
+    <h4 class="text-center">Parking Spots Overview</h4>
+    <canvas id="barChart" height="120"></canvas>
+  </div>
+
+  <!-- Doughnut Chart -->
+  <div class="mb-5">
+    <h4 class="text-center">Overall Spot Status</h4>
+    <canvas id="pieChart" height="120"></canvas>
+  </div>
+
+  <!-- Line Chart: Booking Trends -->
+  <div class="mb-5">
+    <h4 class="text-center">Booking Trends (Last 7 Days)</h4>
+    <canvas id="bookingTrendChart" height="100"></canvas>
+  </div>
+
+  <!-- Bar Chart: Revenue -->
+  <div class="mb-5">
+    <h4 class="text-center">Revenue Analysis (Last 7 Days)</h4>
+    <canvas id="revenueChart" height="100"></canvas>
+  </div>
+</div>
+
+<div class="mb-5">
+  <h4 class="text-center">Total Revenue by Parking Lot</h4>
+  <canvas id="lotRevenueChart" height="100"></canvas>
+</div>
+
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // ----------------- Data from Flask -----------------
+  const lotNames = {{ lot_names | tojson }};
+  const totalSpots = {{ total_spots | tojson }};
+  const reservedSpots = {{ reserved_spots | tojson }};
+  const availableSpots = {{ available_spots | tojson }};
+  const trendLabels = {{ trend_labels | tojson }};
+  const bookingCounts = {{ booking_counts | tojson }};
+  const revenues = {{ revenues | tojson }};
+
+  // ----------------- Bar Chart -----------------
+  const barCtx = document.getElementById('barChart').getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: lotNames,
+      datasets: [
+        {
+          label: 'Total Spots',
+          data: totalSpots,
+          backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        },
+        {
+          label: 'Available Spots',
+          data: availableSpots,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)'
+        },
+        {
+          label: 'Reserved Spots',
+          data: reservedSpots,
+          backgroundColor: 'rgba(255, 99, 132, 0.6)'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Parking Spots by Lot' }
+      },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // ----------------- Doughnut Chart -----------------
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  const totalReserved = reservedSpots.reduce((a, b) => a + b, 0);
+  const totalAvailable = availableSpots.reduce((a, b) => a + b, 0);
+  new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Reserved Spots', 'Available Spots'],
+      datasets: [{
+        data: [totalReserved, totalAvailable],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(75, 192, 192, 0.6)'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Overall Spot Status' }
+      }
+    }
+  });
+
+  // ----------------- Booking Trends (Line Chart) -----------------
+  const trendCtx = document.getElementById('bookingTrendChart').getContext('2d');
+  new Chart(trendCtx, {
+    type: 'line',
+    data: {
+      labels: trendLabels,
+      datasets: [{
+        label: 'Bookings',
+        data: bookingCounts,
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        tension: 0.3,
+        fill: true,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Bookings Per Day' }
+      },
+      scales: {
+        y: { beginAtZero: true, stepSize: 1 }
+      }
+    }
+  });
+
+  // ----------------- Revenue Chart -----------------
+  const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+  new Chart(revenueCtx, {
+    type: 'bar',
+    data: {
+      labels: trendLabels,
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: revenues,
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+        borderColor: 'rgba(255, 206, 86, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: 'Revenue Collected Per Day' }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  const revenuePerLot = {{ revenue_per_lot | tojson }};
+  const lotRevenueCtx = document.getElementById('lotRevenueChart').getContext('2d');
+
+  new Chart(lotRevenueCtx, {
+    type: 'bar',
+    data: {
+      labels: lotNames,
+      datasets: [{
+        label: 'Total Revenue (₹)',
+        data: revenuePerLot,
+        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Total Revenue Collected by Each Parking Lot'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+
+
+</script>
+{% endblock %}
