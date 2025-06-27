@@ -1,34 +1,50 @@
 {% extends 'admin/base_admin.html' %}
 {% block title %}Add Parking Lot{% endblock %}
+
 {% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card h-100 shadow-sm position-relative border rounded-3">
+        <div class="card-body p-4">
+          <h4 class="card-title mb-4 text-center">New Parking Lot</h4>
 
-<div class="form-container">
-<h2>New Parking Lot</h2>
-<form method="POST" class="form">
-    <label>Name:</label>
-    <input type="text" name="name" required>
+          <form method="POST">
 
-    <label>Address:</label>
-    <input type="text" name="address">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" name="name" required class="form-control">
+            </div>
 
-    <label>Pincode:</label>
-    <input type="text" name="pin_code">
+            <div class="mb-3">
+              <label class="form-label">Address</label>
+              <input type="text" name="address" class="form-control">
+            </div>
 
-    <label>Price (₹/hr):</label>
-    <input type="number" name="price" step="0.01" required>
+            <div class="mb-3">
+              <label class="form-label">Pincode</label>
+              <input type="text" name="pin_code" class="form-control">
+            </div>
 
-    <label>Max Spots:</label>
-    <input type="number" name="max_spots" required>
+            <div class="mb-3">
+              <label class="form-label">Price (₹/hr)</label>
+              <input type="number" name="price" step="0.01" required class="form-control">
+            </div>
 
-  
-    <div class="button-group">
-    <a href="{{ url_for('admin.home') }}">
-        <button type="button" class="btn cancel">Cancel</button>
-    </a>
-    
-    <button type="submit" class="btn">Add Lot</button>
-</div>
+            <div class="mb-4">
+              <label class="form-label">Max Spots</label>
+              <input type="number" name="max_spots" required class="form-control">
+            </div>
 
-</form>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+              <a href="{{ url_for('admin.home') }}" class="btn btn-outline-danger px-4 w-50">Cancel</a>
+              <button type="submit" class="btn btn-primary px-4 w-50">Add Lot</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

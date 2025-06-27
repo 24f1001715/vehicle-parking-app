@@ -43,8 +43,8 @@ class ParkingSpot(db.Model):
     __tablename__ = 'parking_spot'
     id = db.Column(db.Integer, primary_key=True)
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
-    spot_number = db.Column(db.Integer, nullable=False)  # Sequential number per lot
-    status = db.Column(db.String(1), default='A')  # A = Available, R = Reserved
+    spot_number = db.Column(db.Integer, nullable=False)  
+    status = db.Column(db.String(1), default='A')  
     reservation = db.relationship('Reservation', backref='spot', uselist=False)
 
 class Reservation(db.Model):
@@ -81,10 +81,9 @@ class Reservation(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.drop_all()  # Only use this if you want to recreate everything
+        db.drop_all()  
         db.create_all()
 
-        # Add a default admin
         if not Admin.query.first():
             admin = Admin(
                 email_id="admin@example.com",
@@ -95,32 +94,64 @@ if __name__ == '__main__':
             )
             db.session.add(admin)
 
-        # Add a sample user
+        user_data = [
+            ("vicky@example.com", "Vicky"),
+            ("arjun@example.com", "Arjun"),
+            ("meera@example.com", "Meera"),
+            ("rahul@example.com", "Rahul"),
+            ("ananya@example.com", "Ananya"),
+            ("karthik@example.com", "Karthik"),
+            ("isha@example.com", "Isha"),
+            ("sanjay@example.com", "Sanjay"),
+            ("neha@example.com", "Neha"),
+            ("vivek@example.com", "Vivek"),
+            ("tara@example.com", "Tara"),
+            ("rohan@example.com", "Rohan"),
+            ("diya@example.com", "Diya"),
+            ("amit@example.com", "Amit"),
+            ("shruti@example.com", "Shruti"),
+            ("dev@example.com", "Dev"),
+            ("riya@example.com", "Riya"),
+            ("manav@example.com", "Manav"),
+            ("simran@example.com", "Simran"),
+            ("aakash@example.com", "Aakash"),
+        ]
+
+        parking_lot_data = [
+            "Central Mall", "Phoenix Marketcity", "Spencer Plaza", "Express Avenue",
+            "Forum Vijaya", "Marina Plaza", "City Centre", "Skywalk Mall",
+            "Tidel Park", "Ascendas", "DLF IT Park", "One India Bulls",
+            "Perungudi Hub", "Tambaram Square", "Anna Nagar Plaza", "Kodambakkam Corner",
+            "Velachery Point", "Adyar Bay", "Ambattur Junction", "Mylapore Tower"
+        ]
+
+        # Seed Users
         if not User.query.first():
-            user1 = User(
-                email_id="vicky@example.com",
-                fullname="Vicky",
-                password=generate_password_hash("12345678"),
-                address="123 User Lane",
-                pincode="600001"
-            )
-            db.session.add(user1)
+            for i, (email, name) in enumerate(user_data):
+                user = User(
+                    email_id=email,
+                    fullname=name,
+                    password=generate_password_hash("password123"),
+                    address=f"{100 + i} Example Street",
+                    pincode=f"600{str(i+1).zfill(3)}"
+                )
+                db.session.add(user)
 
-        # Optional: Add a sample parking lot and spots
         if not ParkingLot.query.first():
-            lot = ParkingLot(
-                prime_location_name="Central Mall",
-                address="123 Main Road, Chennai",
-                pin_code="600001",
-                price=20.0,
-                max_spots=10
-            )
-            db.session.add(lot)
-            db.session.commit()
+            for i, lot_name in enumerate(parking_lot_data):
+                lot = ParkingLot(
+                    prime_location_name=lot_name,
+                    address=f"{i+1} Main Road, Chennai",
+                    pin_code=f"700{str(i+1).zfill(3)}",
+                    price=15 + (i % 5) * 5,
+                    max_spots=10
+                )
+                db.session.add(lot)
+                db.session.commit() 
 
-            for i in range(1, lot.max_spots + 1):
-                spot = ParkingSpot(lot_id=lot.id, spot_number=i)
-                db.session.add(spot)
+                for j in range(1, lot.max_spots + 1):
+                    spot = ParkingSpot(lot_id=lot.id, spot_number=j)
+                    db.session.add(spot)
 
         db.session.commit()
-        print("Database initialized and seeded.")
+        print("Database seeded with 20 users and 20 named parking lots.")

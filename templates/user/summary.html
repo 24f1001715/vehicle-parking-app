@@ -2,35 +2,46 @@
 {% block title %}User Summary{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="text-center mb-4">Your Parking Summary</h2>
-
-  <!-- Line Chart: Bookings Over Time -->
-  <div class="mb-5">
-    <h4 class="text-center">Booking Trend (Last 7 Days)</h4>
-    <canvas id="bookingTrendChart" height="100"></canvas>
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Your Parking Summary</h2>
+    <p class="text-muted">Track your activity and spending insights</p>
   </div>
 
-  <!-- Bar Chart: Cost Over Time -->
-  <div class="mb-5">
-    <h4 class="text-center">Cost Incurred (Last 7 Days)</h4>
-    <canvas id="costChart" height="100"></canvas>
+  <!-- Booking Trend (Line Chart) -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-body">
+      <h5 class="card-title text-center mb-3">Booking Trend (Last 7 Days)</h5>
+      <canvas id="bookingTrendChart" height="100"></canvas>
+    </div>
   </div>
 
-  <!-- Bar Chart: Most Used Parking Lots -->
-  <div class="mb-5">
-    <h4 class="text-center">Most Frequently Used Parking Lots</h4>
-    <canvas id="lotUsageChart" height="100"></canvas>
+  <!-- Cost Chart (Bar) -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-body">
+      <h5 class="card-title text-center mb-3">Cost Incurred (Last 7 Days)</h5>
+      <canvas id="costChart" height="100"></canvas>
+    </div>
   </div>
 
-  <!-- Pie Chart: Reservation Status -->
-  <div class="mb-5">
-    <h4 class="text-center">Reservation Status</h4>
-    <canvas id="statusChart" height="100"></canvas>
+  <!-- Most Used Parking Lots -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-body">
+      <h5 class="card-title text-center mb-3">Most Frequently Used Parking Lots</h5>
+      <canvas id="lotUsageChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Reservation Status -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-body">
+      <h5 class="card-title text-center mb-3">Reservation Status</h5>
+      <canvas id="statusChart" height="100"></canvas>
+    </div>
   </div>
 </div>
 
-<!-- Chart.js CDN -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -43,7 +54,7 @@
   const completed = {{ completed_count }};
 
   // Booking Trend Chart
-  new Chart(document.getElementById('bookingTrendChart').getContext('2d'), {
+  new Chart(document.getElementById('bookingTrendChart'), {
     type: 'line',
     data: {
       labels: trendLabels,
@@ -53,39 +64,62 @@
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
         tension: 0.3,
-        fill: true
+        fill: true,
+        pointRadius: 4,
+        pointHoverRadius: 6
       }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
   });
 
   // Cost Chart
-  new Chart(document.getElementById('costChart').getContext('2d'), {
+  new Chart(document.getElementById('costChart'), {
     type: 'bar',
     data: {
       labels: trendLabels,
       datasets: [{
         label: 'Cost (₹)',
         data: costs,
-        backgroundColor: 'rgba(255, 159, 64, 0.6)'
+        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+        borderRadius: 5
       }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
   });
 
   // Lot Usage Chart
-  new Chart(document.getElementById('lotUsageChart').getContext('2d'), {
+  new Chart(document.getElementById('lotUsageChart'), {
     type: 'bar',
     data: {
       labels: lotNames,
       datasets: [{
         label: 'Times Used',
         data: lotUsage,
-        backgroundColor: 'rgba(153, 102, 255, 0.6)'
+        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+        borderRadius: 5
       }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      scales: {
+        x: { beginAtZero: true }
+      }
     }
   });
 
   // Reservation Status Chart
-  new Chart(document.getElementById('statusChart').getContext('2d'), {
+  new Chart(document.getElementById('statusChart'), {
     type: 'doughnut',
     data: {
       labels: ['Reserved', 'Completed'],
@@ -93,6 +127,12 @@
         data: [reserved, completed],
         backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(75, 192, 192, 0.6)']
       }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
     }
   });
 </script>

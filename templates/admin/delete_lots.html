@@ -2,40 +2,72 @@
 {% block title %}Delete Parking Lots{% endblock %}
 
 {% block content %}
-<h2>Select Parking Lots to Delete</h2>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card shadow-sm position-relative border rounded-3">
 
-<form method="POST">
-    <table class="users-table">
-        <thead>
-            <tr>
-                <th>Select</th>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Pincode</th>
-                <th>Price</th>
-                <th>Max Spots</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for lot in lots %}
-            <tr>
-                <td><input type="checkbox" name="lot_ids" value="{{ lot.id }}"></td>
-                <td>{{ lot.prime_location_name }}</td>
-                <td>{{ lot.address }}</td>
-                <td>{{ lot.pin_code }}</td>
-                <td>{{ lot.price }}</td>
-                <td>{{ lot.max_spots }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="card-header bg-white position-sticky top-0 z-3 d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+          <h4 class="mb-0">Select Parking Lots to Delete</h4>
 
-    <div class="button-group">
-        <button type="submit" class="btn cancel" onclick="return confirm('Are you sure you want to delete the selected parking lots?')">Delete Selected</button>
+          <div class="d-flex gap-2">
+            <button type="submit"
+                    form="deleteForm"
+                    class="btn btn-danger d-none d-md-inline"
+                    onclick="return confirm('Are you sure you want to delete the selected parking lots?')">
+              Delete Selected
+            </button>
+            <button type="submit"
+                    form="deleteForm"
+                    class="btn btn-danger d-inline d-md-none"
+                    onclick="return confirm('Are you sure?')">
+              <i class="bi bi-trash"></i>
+            </button>
 
-        <a href="{{ url_for('admin.home') }}">
-            <button type="button" class="btn cancel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
-        </a>
+            <a href="{{ url_for('admin.home') }}" class="btn btn-outline-secondary d-none d-md-inline">
+              Cancel
+            </a>
+            <a href="{{ url_for('admin.home') }}" class="btn btn-outline-secondary d-inline d-md-none">
+              <i class="bi bi-x-circle"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="card-body p-0" style="max-height: 70vh; overflow-y: auto;">
+          <form method="POST" id="deleteForm">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="bg-white position-sticky top-0 z-2">
+                  <tr class="border-bottom">
+                    <th class="bg-white">Select</th>
+                    <th class="bg-white">Name</th>
+                    <th class="bg-white">Address</th>
+                    <th class="bg-white">Pincode</th>
+                    <th class="bg-white">Price (₹)</th>
+                    <th class="bg-white">Max Spots</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for lot in lots %}
+                  <tr>
+                    <td>
+                      <input class="form-check-input" type="checkbox" name="lot_ids" value="{{ lot.id }}">
+                    </td>
+                    <td>{{ lot.prime_location_name }}</td>
+                    <td>{{ lot.address }}</td>
+                    <td>{{ lot.pin_code }}</td>
+                    <td>{{ lot.price }}</td>
+                    <td>{{ lot.max_spots }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </form>
+        </div>
+
+      </div>
     </div>
-</form>
+  </div>
+</div>
 {% endblock %}

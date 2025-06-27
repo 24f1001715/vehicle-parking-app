@@ -34,7 +34,6 @@ def home():
     booking_data = []
 
     for res in reservations:
-        # Skip if lot or spot is missing (in case of deletion)
         if not res.lot:
             continue
 
@@ -67,10 +66,8 @@ def home():
 def summary():
     user_email = session.get("user")
 
-    # Query all reservations of the user
     reservations = Reservation.query.filter_by(user_email=user_email).all()
 
-    # Booking counts and costs per day (last 7 days)
     from datetime import datetime, timedelta
     from collections import defaultdict
     from sqlalchemy import func
@@ -175,9 +172,8 @@ def edit_profile():
 @user_required
 def confirm_booking(lot_id):
     lot = ParkingLot.query.get_or_404(lot_id)
-    user_email = session.get('user')  # fixed to use 'user'
-
-    # Get the first available spot
+    user_email = session.get('user')  
+    
     available_spot = ParkingSpot.query.filter_by(lot_id=lot_id, status='A').first()
     if not available_spot:
         flash('No available spots in this lot.', 'error')
@@ -200,7 +196,6 @@ def confirm_booking(lot_id):
             vehicle_number=vehicle_number
         )
 
-        # Mark spot as reserved
         available_spot.status = 'R'
 
         db.session.add(reservation)
@@ -249,7 +244,6 @@ def release_spot_confirm(reservation_id):
     reservation.leaving_timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
     reservation.total_cost = round(hours * reservation.cost_per_hour, 2)
 
-    # Free up spot
     reservation.spot.status = 'A'
 
     db.session.commit()

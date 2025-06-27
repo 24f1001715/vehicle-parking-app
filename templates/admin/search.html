@@ -2,58 +2,74 @@
 {% block title %}Admin Search{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Advanced Search</h2>
+<div class="container">
 
-  <form method="GET" action="{{ url_for('admin.search') }}" class="d-flex gap-2 mb-4">
-    <select name="filter_by" class="form-select" required>
-      <option value="" disabled selected>Search by</option>
-      <option value="user_email">User Email</option>
-      <option value="vehicle_number">Vehicle Number</option>
-      <option value="lot_name">Parking Lot</option>
-      <option value="spot_id">Spot ID</option>
-      <option value="reservation_id">Reservation ID</option>
-    </select>
+  <!-- Heading -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Advanced Search</h2>
+  </div>
 
-    <input type="text" name="query" class="form-control" placeholder="Search..." required>
+  <!-- Search Form -->
+  <form method="GET" action="{{ url_for('admin.search') }}" class="row g-2 mb-4">
+    <div class="col-12 col-md-3">
+      <select name="filter_by" class="form-select" required>
+        <option value="" disabled selected>Search by</option>
+        <option value="user_email">User Email</option>
+        <option value="vehicle_number">Vehicle Number</option>
+        <option value="lot_name">Parking Lot</option>
+        <option value="spot_id">Spot ID</option>
+        <option value="reservation_id">Reservation ID</option>
+      </select>
+    </div>
 
-    <button type="submit" class="btn btn-primary">Search</button>
+    <div class="col-12 col-md-6">
+      <input type="text" name="query" class="form-control" placeholder="Search..." required>
+    </div>
+
+    <div class="col-12 col-md-3 d-grid">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
   </form>
 
   {% if results is not none %}
     {% if results %}
-      <h5>Search Results:</h5>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Reservation ID</th>
-            <th>User</th>
-            <th>Vehicle</th>
-            <th>Lot</th>
-            <th>Spot ID</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Total Cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for r in results %}
-          <tr>
-            <td>{{ r.id }}</td>
-            <td>{{ r.user_email }}</td>
-            <td>{{ r.vehicle_number }}</td>
-            <td>{{ r.lot.prime_location_name }}</td>
-            <td>{{ r.spot_id }}</td>
-            <td>{{ r.parking_timestamp }}</td>
-            <td>{{ r.leaving_timestamp or 'In Progress' }}</td>
-            <td>{{ r.total_cost or 'Calculating...' }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <h5 class="mb-3">Search Results:</h5>
+      <div class="row g-4">
+        {% for r in results %}
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm position-relative">
+
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-semibold mb-0">Reservation #{{ r.id }}</h5>
+                <span class="badge 
+                  {% if r.leaving_timestamp %}
+                    bg-light text-dark border border-secondary
+                  {% else %}
+                    bg-success-subtle text-success-emphasis border border-success
+                  {% endif %}
+                ">
+                  {{ 'Completed' if r.leaving_timestamp else 'Active' }}
+                </span>
+              </div>
+
+              <p class="mb-1"><strong>User:</strong> {{ r.user_email }}</p>
+              <p class="mb-1"><strong>Vehicle:</strong> {{ r.vehicle_number }}</p>
+              <p class="mb-1"><strong>Lot:</strong> {{ r.lot.prime_location_name }}</p>
+              <p class="mb-1"><strong>Spot ID:</strong> {{ r.spot_id }}</p>
+              <p class="mb-1"><strong>Start:</strong> <span class="text-muted">{{ r.parking_timestamp }}</span></p>
+              <p class="mb-1"><strong>End:</strong> <span class="text-muted">{{ r.leaving_timestamp or 'In Progress' }}</span></p>
+              <p class="mb-0"><strong>Total Cost:</strong> ₹{{ r.total_cost or 'Calculating...' }}</p>
+
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     {% else %}
-      <div class="alert alert-warning">No matching records found.</div>
+      <div class="alert alert-warning text-center mt-4">No matching records found.</div>
     {% endif %}
   {% endif %}
+
 </div>
 {% endblock %}

@@ -1,28 +1,31 @@
 {% extends 'admin/base_admin.html' %}
 {% block title %}Users{% endblock %}
-{% block content %}
-<h2 class="page-title">Registered Users</h2>
 
-<table class="users-table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Full Name</th>
-            <th>Address</th>
-            <th>Pincode</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.email_id }}</td>
-            <td>{{ user.fullname }}</td>
-            <td>{{ user.address }}</td>
-            <td>{{ user.pincode }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block content %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Registered Users</h2>
+</div>
+
+<div class="row g-4">
+  {% for user in users %}
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="card h-100 shadow-sm position-relative">
+      <div class="card-body">
+        
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <h5 class="card-title fw-semibold mb-0">{{ user.fullname }}</h5>
+          <span class="badge border border-secondary text-dark px-3 py-1">ID: {{ user.id }}</span>
+        </div>
+
+        <p class="card-text mb-2"><strong>Email:</strong> {{ user.email_id }}</p>
+        <p class="card-text mb-2"><strong>Address:</strong> {{ user.address }}</p>
+        <p class="card-text mb-0"><strong>Pincode:</strong> {{ user.pincode }}</p>
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
 {% endblock %}

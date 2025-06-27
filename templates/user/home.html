@@ -2,40 +2,34 @@
 {% block title %}My Bookings{% endblock %}
 
 {% block content %}
-<h2>My Bookings</h2>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">My Bookings</h2>
 
-<table class="users-table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Pincode</th>
-      <th>Price (₹/hr)</th>
-      <th>Booked At</th>
-      <th>Amount</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
+  <div class="row g-4">
     {% for b in bookings %}
-    <tr>
-      <td>{{ b.lot_name }}</td>
-      <td>{{ b.address }}</td>
-      <td>{{ b.pincode }}</td>
-      <td>{{ b.price_per_hr }}</td>
-      <td>{{ b.booked_at }}</td>
-      <td>{{ "%.2f"|format(b.total_cost) }}</td>
-      <td>
-        {% if b.released %}
-          <span style="color: green; font-weight: bold;">Released</span>
-        {% else %}
-            <a href="{{ url_for('user.release_spot', reservation_id=b.id) }}" class="btn" style="background-color: red;font-size: 14px;margin: 0 5px; padding: 8px 30px; display: inline-block; text-align: center;">
-               Release
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm position-relative">
+        <div class="card-body">
+          <h5 class="card-title mb-2">{{ b.lot_name }}</h5>
+          <p class="mb-1"><strong>Address:</strong> {{ b.address }}</p>
+          <p class="mb-1"><strong>Pincode:</strong> {{ b.pincode }}</p>
+          <p class="mb-1"><strong>Price:</strong> ₹{{ b.price_per_hr }}/hr</p>
+          <p class="mb-1"><strong>Booked At:</strong> {{ b.booked_at }}</p>
+          <p class="mb-3"><strong>Amount:</strong> ₹{{ "%.2f"|format(b.total_cost) }}</p>
+
+          {% if b.released %}
+            <button class="btn btn-outline-success w-100" disabled>
+              <i class="bi bi-check-circle-fill"></i> Released
+            </button>
+          {% else %}
+            <a href="{{ url_for('user.release_spot', reservation_id=b.id) }}" class="btn btn-danger w-100">
+              <i class="bi bi-box-arrow-up"></i> Release Spot
             </a>
-        {% endif %}
-      </td>
-    </tr>
+          {% endif %}
+        </div>
+      </div>
+    </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+</div>
 {% endblock %}

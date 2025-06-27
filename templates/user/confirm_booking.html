@@ -2,33 +2,44 @@
 {% block title %}Confirm Booking{% endblock %}
 
 {% block content %}
-<div class="form-container">
-  <h2>Confirm Booking</h2>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card h-100 shadow-sm position-relative">
+        <div class="card-body px-4 py-4">
 
-  <form method="POST">
-    <!-- Lot ID (Read-only) -->
-    <label>Lot ID:</label>
-    <input type="text" value="{{ lot.id }}" readonly>
+          <h4 class="card-title mb-4 text-center">Confirm Booking</h4>
+          <form method="POST">
 
-    <!-- Spot ID (Read-only) -->
-    <label>Spot ID:</label>
-    <input type="text" value="{{ spot.id }}" readonly>
+            <div class="mb-3">
+              <label class="form-label">Lot ID:</label>
+              <input type="text" class="form-control" value="{{ lot.id }}" readonly>
+            </div>
 
-    <!-- User Email (Read-only) -->
-    <label>Your Email:</label>
-    <input type="text" value="{{ user_email }}" readonly>
+            <div class="mb-3">
+              <label class="form-label">Spot ID:</label>
+              <input type="text" class="form-control" value="{{ spot.id }}" readonly>
+            </div>
 
-    <!-- Vehicle Number -->
-    <label>Vehicle Number:</label>
-    <input type="text" name="vehicle_number" placeholder="Enter your vehicle number" required>
+            <div class="mb-3">
+              <label class="form-label">Your Email:</label>
+              <input type="text" class="form-control" value="{{ user_email }}" readonly>
+            </div>
 
-    <!-- Action Buttons -->
-    <div class="button-group" style="justify-content: space-between;">
-      <a href="{{ url_for('user.book') }}">
-        <button type="button" class="btn cancel">Cancel</button>
-      </a>
-      <button type="submit" class="btn">Book</button>
+            <div class="mb-4">
+              <label class="form-label">Vehicle Number:</label>
+              <input type="text" name="vehicle_number" class="form-control" placeholder="Enter your vehicle number" required>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-3">
+              <a href="{{ url_for('user.book') }}" class="btn btn-outline-danger px-4 w-50">Cancel</a>
+              <button type="submit" class="btn btn-primary px-4 w-50">Book</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
     </div>
-  </form>
+  </div>
 </div>
 {% endblock %}
