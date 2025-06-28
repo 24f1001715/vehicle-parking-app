@@ -5,38 +5,48 @@
 <div class="container my-5">
   <div class="text-center mb-4">
     <h2 class="fw-bold">Your Parking Summary</h2>
-    <p class="text-muted">Track your activity and spending insights</p>
+    <p class="text-muted">Track your parking behavior and spending insights</p>
   </div>
 
-  <!-- Booking Trend (Line Chart) -->
-  <div class="card shadow-sm mb-5">
-    <div class="card-body">
-      <h5 class="card-title text-center mb-3">Booking Trend (Last 7 Days)</h5>
-      <canvas id="bookingTrendChart" height="100"></canvas>
+  <div class="row g-4">
+    <!-- Booking Trend -->
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-3">Booking Trend (7 Days)</h5>
+          <canvas id="bookingTrendChart" height="150"></canvas>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Cost Chart (Bar) -->
-  <div class="card shadow-sm mb-5">
-    <div class="card-body">
-      <h5 class="card-title text-center mb-3">Cost Incurred (Last 7 Days)</h5>
-      <canvas id="costChart" height="100"></canvas>
+    <!-- Cost Incurred -->
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-3">Cost Incurred (7 Days)</h5>
+          <canvas id="costChart" height="150"></canvas>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Most Used Parking Lots -->
-  <div class="card shadow-sm mb-5">
-    <div class="card-body">
-      <h5 class="card-title text-center mb-3">Most Frequently Used Parking Lots</h5>
-      <canvas id="lotUsageChart" height="100"></canvas>
+    <!-- Lot Usage -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-3">Frequent Parking Lots</h5>
+          <canvas id="lotUsageChart" height="180"></canvas>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Reservation Status -->
-  <div class="card shadow-sm mb-5">
-    <div class="card-body">
-      <h5 class="card-title text-center mb-3">Reservation Status</h5>
-      <canvas id="statusChart" height="100"></canvas>
+    <!-- Reservation Status -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-3">Reservation Status</h5>
+          <canvas id="statusChart" height="180"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -53,7 +63,6 @@
   const reserved = {{ reserved_count }};
   const completed = {{ completed_count }};
 
-  // Booking Trend Chart
   new Chart(document.getElementById('bookingTrendChart'), {
     type: 'line',
     data: {
@@ -63,7 +72,7 @@
         data: bookingCounts,
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        tension: 0.3,
+        tension: 0.4,
         fill: true,
         pointRadius: 4,
         pointHoverRadius: 6
@@ -71,13 +80,10 @@
     },
     options: {
       responsive: true,
-      scales: {
-        y: { beginAtZero: true }
-      }
+      scales: { y: { beginAtZero: true } }
     }
   });
 
-  // Cost Chart
   new Chart(document.getElementById('costChart'), {
     type: 'bar',
     data: {
@@ -91,13 +97,10 @@
     },
     options: {
       responsive: true,
-      scales: {
-        y: { beginAtZero: true }
-      }
+      scales: { y: { beginAtZero: true } }
     }
   });
 
-  // Lot Usage Chart
   new Chart(document.getElementById('lotUsageChart'), {
     type: 'bar',
     data: {
@@ -112,13 +115,10 @@
     options: {
       responsive: true,
       indexAxis: 'y',
-      scales: {
-        x: { beginAtZero: true }
-      }
+      scales: { x: { beginAtZero: true } }
     }
   });
 
-  // Reservation Status Chart
   new Chart(document.getElementById('statusChart'), {
     type: 'doughnut',
     data: {
@@ -130,9 +130,7 @@
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: { position: 'bottom' }
-      }
+      plugins: { legend: { position: 'bottom' } }
     }
   });
 </script>

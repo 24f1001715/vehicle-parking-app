@@ -21,20 +21,21 @@
       position: relative;
     }
 
-    /* Short separator between nav items */
-    .navbar-nav .nav-item.border-right-short::after {
-      content: "";
-      position: absolute;
-      right: 0;
-      top: 15%;           /* Push separator slightly down */
-      height: 70%;        /* Shorter height */
-      width: 1px;
-      background-color: #dee2e6;
-    }
+    /* Short separator between nav items (only visible on md+ screens) */
+    @media (min-width: 992px) {
+      .navbar-nav .nav-item.border-right-short::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 15%;
+        height: 70%;
+        width: 1px;
+        background-color: #dee2e6;
+      }
 
-    /* Prevent last item from showing separator */
-    .navbar-nav .nav-item:last-child::after {
-      display: none;
+      .navbar-nav .nav-item:last-child::after {
+        display: none;
+      }
     }
   </style>
 </head>

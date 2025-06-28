@@ -95,8 +95,8 @@ if __name__ == '__main__':
             db.session.add(admin)
 
         user_data = [
+            ("vidhya@example.com", "Vidhya"),
             ("vicky@example.com", "Vicky"),
-            ("arjun@example.com", "Arjun"),
             ("meera@example.com", "Meera"),
             ("rahul@example.com", "Rahul"),
             ("ananya@example.com", "Ananya"),

@@ -3,73 +3,65 @@
 
 {% block content %}
 <div class="container mt-4">
+  <h2 class="mb-4 text-center">Admin Summary Dashboard</h2>
 
-  <h2 class="mb-4">Parking Management Summary</h2>
-
-  <!-- Row 1: Doughnut + Booking Trend -->
+  <!-- Row 1: Spot Status | Booking Trend -->
   <div class="row g-4 mb-3">
-    <!-- Doughnut Chart -->
-    <div class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm position-relative">
+    <div class="col-12 col-md-3">
+      <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title text-center mb-4">Overall Spot Status</h5>
-          <canvas id="pieChart" height="120"></canvas>
+          <h6 class="card-title text-center mb-3">Overall Spot Status</h6>
+          <canvas id="pieChart" height="160"></canvas>
         </div>
       </div>
     </div>
-
-    <!-- Booking Trends Line Chart -->
-    <div class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm position-relative">
+    <div class="col-12 col-md-9">
+      <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title text-center mb-4">Booking Trends (Last 7 Days)</h5>
-          <canvas id="bookingTrendChart" height="100"></canvas>
+          <h6 class="card-title text-center mb-3">Booking Trends (Last 7 Days)</h6>
+          <canvas id="bookingTrendChart" height="120"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Row 2: Revenue Charts -->
+  <!-- Row 2: Revenue by Day | Revenue by Lot -->
   <div class="row g-4 mb-3">
-    <!-- Revenue by Day -->
     <div class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm position-relative">
+      <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title text-center mb-4">Revenue Analysis (Last 7 Days)</h5>
-          <canvas id="revenueChart" height="100"></canvas>
+          <h6 class="card-title text-center mb-3">Revenue Analysis (Last 7 Days)</h6>
+          <canvas id="revenueChart" height="120"></canvas>
         </div>
       </div>
     </div>
-
-    <!-- Revenue by Lot -->
     <div class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm position-relative">
+      <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title text-center mb-4">Total Revenue by Parking Lot</h5>
-          <canvas id="lotRevenueChart" height="100"></canvas>
+          <h6 class="card-title text-center mb-3">Revenue by Parking Lot ID</h6>
+          <canvas id="lotRevenueChart" height="120"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Row 3: Parking Spots Overview -->
+  <!-- Row 3: Parking Spot Overview -->
   <div class="row g-4 mb-5">
     <div class="col-12">
-      <div class="card h-100 shadow-sm position-relative">
+      <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title text-center mb-4">Parking Spots Overview</h5>
-          <canvas id="barChart" height="120"></canvas>
+          <h6 class="card-title text-center mb-3">Parking Spots Overview by Lot ID</h6>
+          <canvas id="barChart" height="140"></canvas>
         </div>
       </div>
     </div>
   </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-  const lotNames = {{ lot_names | tojson }};
+  const lotIds = {{ lot_ids | tojson }};
   const totalSpots = {{ total_spots | tojson }};
   const reservedSpots = {{ reserved_spots | tojson }};
   const availableSpots = {{ available_spots | tojson }};
@@ -78,28 +70,10 @@
   const revenues = {{ revenues | tojson }};
   const revenuePerLot = {{ revenue_per_lot | tojson }};
 
-  // Parking Spots Overview (Bar Chart)
-  new Chart(document.getElementById('barChart'), {
-    type: 'bar',
-    data: {
-      labels: lotNames,
-      datasets: [
-        { label: 'Total Spots', data: totalSpots, backgroundColor: 'rgba(54, 162, 235, 0.6)' },
-        { label: 'Available Spots', data: availableSpots, backgroundColor: 'rgba(75, 192, 192, 0.6)' },
-        { label: 'Reserved Spots', data: reservedSpots, backgroundColor: 'rgba(255, 99, 132, 0.6)' }
-      ]
-    },
-    options: {
-      responsive: true,
-      scales: { y: { beginAtZero: true } }
-    }
-  });
-
-  // Doughnut Chart
   new Chart(document.getElementById('pieChart'), {
     type: 'doughnut',
     data: {
-      labels: ['Reserved Spots', 'Available Spots'],
+      labels: ['Reserved', 'Available'],
       datasets: [{
         data: [
           reservedSpots.reduce((a, b) => a + b, 0),
@@ -108,10 +82,12 @@
         backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(75, 192, 192, 0.6)']
       }]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
   });
 
-  // Booking Trends
   new Chart(document.getElementById('bookingTrendChart'), {
     type: 'line',
     data: {
@@ -132,7 +108,6 @@
     }
   });
 
-  // Revenue per Day
   new Chart(document.getElementById('revenueChart'), {
     type: 'bar',
     data: {
@@ -151,11 +126,10 @@
     }
   });
 
-  // Revenue by Lot
   new Chart(document.getElementById('lotRevenueChart'), {
     type: 'bar',
     data: {
-      labels: lotNames,
+      labels: lotIds,
       datasets: [{
         label: 'Total Revenue (₹)',
         data: revenuePerLot,
@@ -163,6 +137,22 @@
         borderColor: 'rgba(153, 102, 255, 1)',
         borderWidth: 1
       }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: lotIds,
+      datasets: [
+        { label: 'Total', data: totalSpots, backgroundColor: 'rgba(54, 162, 235, 0.6)' },
+        { label: 'Available', data: availableSpots, backgroundColor: 'rgba(75, 192, 192, 0.6)' },
+        { label: 'Reserved', data: reservedSpots, backgroundColor: 'rgba(255, 99, 132, 0.6)' }
+      ]
     },
     options: {
       responsive: true,

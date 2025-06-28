@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-
   <meta charset="UTF-8">
   <title>{% block title %}User Dashboard{% endblock %}</title>
 
@@ -23,20 +22,21 @@
       position: relative;
     }
 
-    /* Short vertical separators */
-    .navbar-nav .nav-item.border-right-short::after {
-      content: "";
-      position: absolute;
-      right: 0;
-      top: 15%;           /* Slightly lower */
-      height: 70%;        /* Shorter separator */
-      width: 1px;
-      background-color: #dee2e6;
-    }
+    /* Show separators only on large screens and above (≥ 992px) */
+    @media (min-width: 992px) {
+      .navbar-nav .nav-item.border-right-short::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 15%;
+        height: 70%;
+        width: 1px;
+        background-color: #dee2e6;
+      }
 
-    /* Hide separator on last item */
-    .navbar-nav .nav-item:last-child::after {
-      display: none;
+      .navbar-nav .nav-item:last-child::after {
+        display: none;
+      }
     }
   </style>
 </head>

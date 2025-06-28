@@ -83,7 +83,7 @@ from sqlalchemy import func
 @admin_required
 def summary():
     lots = ParkingLot.query.all()
-
+    lot_ids = [lot.id for lot in lots]
     lot_names = []
     total_spots = []
     available_spots = []
@@ -136,6 +136,7 @@ def summary():
 
     return render_template(
         'admin/summary.html',
+        lot_ids=lot_ids,
         lot_names=lot_names,
         total_spots=total_spots,
         reserved_spots=reserved_spots,
