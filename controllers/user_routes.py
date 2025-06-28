@@ -6,6 +6,7 @@ from models.models import db, User, ParkingLot, ParkingSpot, Reservation
 from flask import flash
 from utils.decorators import user_required
 from sqlalchemy import func
+import math
 
 user_bp = Blueprint('user', __name__)
 
@@ -43,7 +44,7 @@ def home():
         else:
             end_time = now
 
-        duration_hours = max((end_time - start_time).total_seconds() / 3600, 1)
+        duration_hours =  max(math.ceil((end_time - start_time).total_seconds() / 3600), 1)
         price = res.cost_per_hour or res.lot.price or 0
         total = round(duration_hours * price, 2)
 
@@ -148,16 +149,28 @@ def edit_profile():
 
     if request.method == 'POST':
         new_email = request.form['email']
+
         if new_email != user.email_id:
+            # Check if new email already exists
             if User.query.filter_by(email_id=new_email).first():
                 return "Email already in use.", 400
+
+            # Update related models
+            from models.models import Reservation  # Import if not at top
+
+            # Update email in reservations
+            Reservation.query.filter_by(user_email=user.email_id).update({'user_email': new_email})
+
+            # Update user's email
             user.email_id = new_email
             session['user'] = new_email
 
+        # Update other fields
         user.fullname = request.form['fullname']
         user.address = request.form['address']
         user.pincode = request.form['pincode']
 
+        # Update password if provided
         new_password = request.form.get('password')
         if new_password:
             user.password = generate_password_hash(new_password)
@@ -219,7 +232,7 @@ def release_spot_page(reservation_id):
 
     start = datetime.strptime(reservation.parking_timestamp, "%Y-%m-%d %H:%M:%S")
     now = datetime.now()
-    duration_hrs = max((now - start).total_seconds() / 3600, 1)
+    duration_hrs = math.ceil((now - start).total_seconds() / 3600)
     estimated_cost = round(duration_hrs * reservation.cost_per_hour, 2)
 
     return render_template('user/release_confirm.html', reservation=reservation,
@@ -239,7 +252,7 @@ def release_spot_confirm(reservation_id):
 
     now = datetime.now()
     start = datetime.strptime(reservation.parking_timestamp, "%Y-%m-%d %H:%M:%S")
-    hours = max((now - start).total_seconds() / 3600, 1)
+    hours = math.ceil((now - start).total_seconds() / 3600)
 
     reservation.leaving_timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
     reservation.total_cost = round(hours * reservation.cost_per_hour, 2)

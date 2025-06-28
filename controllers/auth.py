@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from models.models import db, Admin, User
 from werkzeug.security import generate_password_hash, check_password_hash
+import re
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -33,6 +34,11 @@ def register():
         pincode = request.form['pincode']
         if User.query.filter_by(email_id=email).first():
             return render_template('register.html', error='User already exists')
+         
+        if not is_strong_password(password):
+            return render_template('register.html', error='Password must be at least 8 characters long, include a capital letter, a digit, and a special character.')
+
+
         hashed_pw = generate_password_hash(password)
         user = User(email_id=email, fullname=fullname, password=hashed_pw, address=address, pincode=pincode)
         db.session.add(user)
@@ -44,3 +50,13 @@ def register():
 def logout():
     session.clear()
     return redirect(url_for('auth.login'))
+
+
+
+def is_strong_password(password):
+    return (
+        len(password) >= 8 and
+        re.search(r"[A-Z]", password) and
+        re.search(r"[0-9]", password) and
+        re.search(r"[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]", password)
+    )
