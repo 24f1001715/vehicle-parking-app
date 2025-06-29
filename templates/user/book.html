@@ -42,14 +42,16 @@
           {% set percent = (available / total * 100) if total > 0 else 0 %}
 
           <p class="mb-1"><strong>Availability:</strong> {{ available }}/{{ total }}</p>
-          <div class="progress mb-3" style="height: 10px;">
+          <div class="progress mb-3" style="height: 20px;">
             <div 
               class="progress-bar 
               {% if percent >= 70 %}bg-success
               {% elif percent >= 30 %}bg-warning
               {% else %}bg-danger{% endif %}"
               role="progressbar" style="width: {{ percent }}%">
+            {{percent|round(0) }}%
             </div>
+            
           </div>
 
           {% if available > 0 %}
