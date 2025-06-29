@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 from models.models import db, User, ParkingLot, ParkingSpot, Reservation
 from flask import flash
 from utils.decorators import user_required
-from sqlalchemy import func
+from sqlalchemy import or_, func
 import math
 
 user_bp = Blueprint('user', __name__)
@@ -15,10 +15,13 @@ from sqlalchemy.orm import joinedload
 
 from datetime import datetime
 
+from flask import request
+
 @user_bp.route('/user/dashboard')
 @user_required
 def home():
     email = session.get('user')
+    filter_option = request.args.get('filter', 'all')
 
     reservations = (
         Reservation.query
@@ -44,11 +47,11 @@ def home():
         else:
             end_time = now
 
-        duration_hours =  max(math.ceil((end_time - start_time).total_seconds() / 3600), 1)
+        duration_hours = max(math.ceil((end_time - start_time).total_seconds() / 3600), 1)
         price = res.cost_per_hour or res.lot.price or 0
         total = round(duration_hours * price, 2)
 
-        booking_data.append({
+        booking = {
             'id': res.id,
             'lot_name': res.lot.prime_location_name or 'Unknown',
             'address': res.lot.address or 'N/A',
@@ -57,9 +60,16 @@ def home():
             'booked_at': start_time.strftime("%Y-%m-%d %H:%M"),
             'released': res.leaving_timestamp is not None,
             'total_cost': res.total_cost or total,
-        })
+        }
 
-    return render_template("user/home.html", bookings=booking_data)
+        if filter_option == 'released' and not booking['released']:
+            continue
+        if filter_option == 'not_released' and booking['released']:
+            continue
+
+        booking_data.append(booking)
+
+    return render_template("user/home.html", bookings=booking_data, filter=filter_option)
 
 
 @user_bp.route('/user/summary')
@@ -120,10 +130,19 @@ def summary():
 
 
 
+
 @user_bp.route('/user/book')
 @user_required
 def book():
+    query = request.args.get('q', '').strip().lower()
+
     lots = ParkingLot.query.all()
+
+    if query:
+        lots = [lot for lot in lots if
+                query in (lot.prime_location_name or '').lower() or
+                query in (lot.address or '').lower() or
+                query in (lot.pin_code or '').lower()]
 
     availability = dict(
         db.session.query(
@@ -134,7 +153,7 @@ def book():
          .all()
     )
 
-    return render_template('user/book.html', lots=lots, availability=availability)
+    return render_template('user/book.html', lots=lots, availability=availability, query=query)
 
 
 
