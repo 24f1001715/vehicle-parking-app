@@ -31,11 +31,18 @@
     {% for lot in lots %}
     <div class="col-12 col-md-6 col-lg-4">
       <div class="card h-100 shadow-sm position-relative">
-        <div class="card-body">
+        <div class="card-body position-relative">
+
+          <!-- Price badge with border and rounded-pill -->
+          <span 
+          class="position-absolute top-0 end-0 text-primary border border-primary px-3 py-1 rounded-2 fw-semibold"
+          style="font-size: 0.9rem; margin-top: 10px; margin-right: 10px; background-color: white;">
+          ₹{{ lot.price }}/hr
+          </span>
+
           <h5 class="card-title mb-2">{{ lot.prime_location_name }}</h5>
           <p class="mb-1"><strong>Address:</strong> {{ lot.address }}</p>
           <p class="mb-1"><strong>Pincode:</strong> {{ lot.pin_code }}</p>
-          <p class="mb-1"><strong>Price:</strong> ₹{{ lot.price }}/hr</p>
 
           {% set available = availability.get(lot.id, 0) %}
           {% set total = lot.max_spots %}
@@ -49,9 +56,8 @@
               {% elif percent >= 30 %}bg-warning
               {% else %}bg-danger{% endif %}"
               role="progressbar" style="width: {{ percent }}%">
-            {{percent|round(0) }}%
+              {{ percent|round(0) }}%
             </div>
-            
           </div>
 
           {% if available > 0 %}

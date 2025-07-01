@@ -37,38 +37,40 @@ from sqlalchemy.orm import joinedload
 def search():
     filter_by = request.args.get("filter_by")
     query = request.args.get("query")
-    results = None
+    results = []
 
     if filter_by and query:
         q = query.strip()
 
         if filter_by == "user_email":
-            results = Reservation.query.filter(Reservation.user_email.ilike(f"%{q}%"))\
+            # You can also search User model directly if needed
+            reservations = Reservation.query.filter(Reservation.user_email.ilike(f"%{q}%"))\
                 .options(joinedload(Reservation.lot)).all()
+            results = [{"type": "reservation", "data": r} for r in reservations]
 
         elif filter_by == "vehicle_number":
-            results = Reservation.query.filter(Reservation.vehicle_number.ilike(f"%{q}%"))\
+            reservations = Reservation.query.filter(Reservation.vehicle_number.ilike(f"%{q}%"))\
                 .options(joinedload(Reservation.lot)).all()
+            results = [{"type": "reservation", "data": r} for r in reservations]
 
         elif filter_by == "lot_name":
-            lot_ids = ParkingLot.query.filter(ParkingLot.prime_location_name.ilike(f"%{q}%")).with_entities(ParkingLot.id).all()
-            lot_ids = [id for (id,) in lot_ids]
-            results = Reservation.query.filter(Reservation.lot_id.in_(lot_ids))\
-                .options(joinedload(Reservation.lot)).all()
+            lots = ParkingLot.query.filter(ParkingLot.prime_location_name.ilike(f"%{q}%")).all()
+            results = [{"type": "lot", "data": l} for l in lots]
 
         elif filter_by == "spot_id":
             try:
                 spot_id = int(q)
-                results = Reservation.query.filter_by(spot_id=spot_id)\
-                    .options(joinedload(Reservation.lot)).all()
+                spots = ParkingSpot.query.filter_by(id=spot_id).all()
+                results = [{"type": "spot", "data": s} for s in spots]
             except ValueError:
                 results = []
 
         elif filter_by == "reservation_id":
             try:
                 rid = int(q)
-                results = Reservation.query.filter_by(id=rid)\
-                    .options(joinedload(Reservation.lot)).all()
+                r = Reservation.query.filter_by(id=rid).options(joinedload(Reservation.lot)).first()
+                if r:
+                    results = [{"type": "reservation", "data": r}]
             except ValueError:
                 results = []
 

@@ -33,43 +33,69 @@
 
   {% if results is not none %}
     {% if results %}
-      <h5 class="mb-3">Search Results:</h5>
+      <h5 class="mb-3">Search Results ({{ results|length }})</h5>
       <div class="row g-4">
-        {% for r in results %}
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm position-relative">
+        {% for result in results %}
+          {% set r = result.data %}
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm position-relative border rounded-3">
+              <div class="card-body">
 
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="fw-semibold mb-0">Reservation #{{ r.id }}</h5>
-                <span class="badge 
-                  {% if r.leaving_timestamp %}
-                    bg-light text-dark border border-secondary
-                  {% else %}
-                    bg-success-subtle text-success-emphasis border border-success
-                  {% endif %}
-                ">
-                  {{ 'Completed' if r.leaving_timestamp else 'Active' }}
-                </span>
+                {% if result.type == 'reservation' %}
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-semibold mb-0">Reservation #{{ r.id }}</h5>
+                    <span class="badge 
+                      {% if r.leaving_timestamp %}
+                        bg-light text-dark border border-secondary
+                      {% else %}
+                        bg-success-subtle text-success-emphasis border border-success
+                      {% endif %}
+                    ">
+                      {{ 'Completed' if r.leaving_timestamp else 'Active' }}
+                    </span>
+                  </div>
+                  <p class="mb-1"><strong>User:</strong> {{ r.user_email }}</p>
+                  <p class="mb-1"><strong>Vehicle:</strong> {{ r.vehicle_number }}</p>
+                  <p class="mb-1"><strong>Lot:</strong> {{ r.lot.prime_location_name }}</p>
+                  <p class="mb-1"><strong>Spot ID:</strong> {{ r.spot_id }}</p>
+                  <p class="mb-1"><strong>Start:</strong> {{ r.parking_timestamp }}</p>
+                  <p class="mb-1"><strong>End:</strong> {{ r.leaving_timestamp or 'In Progress' }}</p>
+                  <p class="mb-0"><strong>Total Cost:</strong> ₹{{ r.total_cost or 'Calculating...' }}</p>
+
+                {% elif result.type == 'lot' %}
+                  <h5 class="fw-semibold mb-2">Parking Lot: {{ r.name }}</h5>
+                  <p class="mb-1"><strong>Location:</strong> {{ r.address }}</p>
+                  <p class="mb-1"><strong>Pin Code:</strong> {{ r.pin_code }}</p>
+                  <p class="mb-1"><strong>Max Spots:</strong> {{ r.max_spots }}</p>
+                  <p class="mb-0"><strong>Price:</strong> ₹{{ r.price }}/hr</p>
+
+                {% elif result.type == 'spot' %}
+                  <h5 class="fw-semibold mb-2">Spot ID: {{ r.id }}</h5>
+                  <p class="mb-1"><strong>Lot:</strong> {{ r.lot.name }}</p>
+                  <p class="mb-1"><strong>Status:</strong> 
+                    <span class="badge 
+                      {% if r.status == 'A' %}
+                        bg-success
+                      {% elif r.status == 'R' %}
+                        bg-warning text-dark
+                      {% else %}
+                        bg-secondary
+                      {% endif %}
+                    ">
+                      {{ 'Available' if r.status == 'A' else 'Reserved' if r.status == 'R' else 'Unknown' }}
+                    </span>
+                  </p>
+
+                {% endif %}
+
               </div>
-
-              <p class="mb-1"><strong>User:</strong> {{ r.user_email }}</p>
-              <p class="mb-1"><strong>Vehicle:</strong> {{ r.vehicle_number }}</p>
-              <p class="mb-1"><strong>Lot:</strong> {{ r.lot.prime_location_name }}</p>
-              <p class="mb-1"><strong>Spot ID:</strong> {{ r.spot_id }}</p>
-              <p class="mb-1"><strong>Start:</strong> <span class="text-muted">{{ r.parking_timestamp }}</span></p>
-              <p class="mb-1"><strong>End:</strong> <span class="text-muted">{{ r.leaving_timestamp or 'In Progress' }}</span></p>
-              <p class="mb-0"><strong>Total Cost:</strong> ₹{{ r.total_cost or 'Calculating...' }}</p>
-
             </div>
           </div>
-        </div>
         {% endfor %}
       </div>
     {% else %}
       <div class="alert alert-warning text-center mt-4">No matching records found.</div>
     {% endif %}
   {% endif %}
-
 </div>
 {% endblock %}

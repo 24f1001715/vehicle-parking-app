@@ -44,9 +44,9 @@
         <p class="card-text mb-1"><strong>Booked:</strong> {{ booked }}/{{ lot.max_spots }}</p>
         <div class="progress" style="height: 20px;">
           <div class="progress-bar 
-            {% if percent >= 80 %}
+            {% if percent >= 70 %}
               bg-success
-            {% elif percent >= 50 %}
+            {% elif percent >= 30 %}
               bg-warning
             {% else %}
               bg-danger

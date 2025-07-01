@@ -54,12 +54,18 @@
       <div class="col-12 col-md-6 col-lg-4">
         <div class="card h-100 shadow-sm">
           <div class="card-body">
+            <!-- Price badge with border and rounded-pill -->
+            <span 
+              class="position-absolute top-0 end-0 text-success border border-success px-3 py-1 rounded-2 fw-semibold"
+              style="font-size: 0.9rem; margin-top: 10px; margin-right: 10px; background-color: white;">
+              ₹{{ "%.2f"|format(b.total_cost) }}
+            </span>
+
             <h5 class="card-title mb-2">{{ b.lot_name }}</h5>
             <p class="mb-1"><strong>Address:</strong> {{ b.address }}</p>
             <p class="mb-1"><strong>Pincode:</strong> {{ b.pincode }}</p>
             <p class="mb-1"><strong>Price:</strong> ₹{{ b.price_per_hr }}/hr</p>
             <p class="mb-1"><strong>Booked At:</strong> {{ b.booked_at }}</p>
-            <p class="mb-3"><strong>Amount:</strong> ₹{{ "%.2f"|format(b.total_cost) }}</p>
 
             {% if b.released %}
               <button class="btn btn-outline-success w-100" disabled>

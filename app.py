@@ -3,6 +3,9 @@ from models.models import db
 from controllers.auth import auth_bp
 from controllers.admin_routes import admin_bp
 from controllers.user_routes import user_bp
+from controllers.api import api_restful_bp
+
+
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -15,6 +18,7 @@ db.init_app(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(user_bp)
+app.register_blueprint(api_restful_bp)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
