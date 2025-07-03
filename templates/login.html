@@ -2,48 +2,143 @@
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <meta charset="UTF-8">
   <title>Login</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Dark Mode Script -->
+  <script>
+    (function () {
+      const applyDarkMode = () => {
+        document.documentElement.style.filter = "invert(1) hue-rotate(180deg)";
+        document.body.style.backgroundColor = "#fff";
+        document.querySelectorAll("img, video").forEach(el => {
+          el.style.filter = "invert(1) hue-rotate(180deg)";
+        });
+      };
+
+      const removeDarkMode = () => {
+        document.documentElement.style.filter = "";
+        document.body.style.backgroundColor = "";
+        document.querySelectorAll("img, video").forEach(el => {
+          el.style.filter = "";
+        });
+      };
+
+      const toggleDark = () => {
+        const isDark = document.documentElement.style.filter.includes("invert");
+        if (isDark) {
+          removeDarkMode();
+          localStorage.setItem("darkMode", "off");
+        } else {
+          applyDarkMode();
+          localStorage.setItem("darkMode", "on");
+        }
+
+        const toggles = document.querySelectorAll(".form-check-input");
+        toggles.forEach(t => t.checked = !isDark);
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggles = document.querySelectorAll(".form-check-input");
+        toggles.forEach(t => t.addEventListener("change", toggleDark));
+
+        if (localStorage.getItem("darkMode") === "on") {
+          applyDarkMode();
+          toggles.forEach(t => t.checked = true);
+        }
+
+        const observer = new MutationObserver(() => {
+          if (document.documentElement.style.filter.includes("invert")) {
+            document.querySelectorAll("img, video").forEach(el => {
+              el.style.filter = "invert(1) hue-rotate(180deg)";
+            });
+          }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+      });
+    })();
+  </script>
+
+  <style>
+    body {
+      padding-top: 60px; /* space for fixed navbar */
+      background-color: #f8f9fa;
+    }
+
+    .form-switch .form-check-input {
+      width: 2.5em;
+      height: 1.3em;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+    }
+
+    .login-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 60px);
+    }
+
+    .login-card {
+      max-width: 500px;
+      width: 100%;
+    }
+    @media (max-width: 575.98px) {
+  .login-wrapper {
+    align-items: center;
+    padding-bottom: 8rem;
+  }
+}
+  </style>
 </head>
-<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+<body>
 
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-5">
-        <div class="card h-100 shadow-sm position-relative border">
-          <div class="card-body px-4 py-4">
-            <h4 class="card-title mb-3 text-center">Login</h4>
+  <!-- Fixed Top Navbar (All Screens) -->
+  <nav class="navbar bg-white shadow-sm d-flex align-items-center px-3 py-1 position-fixed top-0 start-0 w-100 z-3" style="min-height: 48px;">
+    <span class="navbar-brand text-primary position-absolute top-50 start-50 translate-middle">ParkIN</span>
+    <div class="ms-auto">
+      <div class="form-check form-switch mb-0">
+        <input class="form-check-input" type="checkbox" id="darkToggleMobile">
+      </div>
+    </div>
+  </nav>
 
-            {% if error %}
-              <div class="alert alert-danger text-center py-2">{{ error }}</div>
-            {% endif %}
+  <!-- Login Form -->
+  <div class="container login-wrapper">
+    <div class="login-card card shadow-sm border">
+      <div class="card-body px-4 py-4">
+        <h4 class="card-title mb-3 text-center">Login</h4>
 
-            <form method="POST">
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-control" required>
-              </div>
+        {% if error %}
+          <div class="alert alert-danger text-center py-2">{{ error }}</div>
+        {% endif %}
 
-              <div class="mb-4">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-control" required>
-              </div>
-
-              <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary">Login</button>
-              </div>
-
-              <p class="text-center mb-0">
-                Don't have an account?
-                <a href="{{ url_for('auth.register') }}">Sign up</a>
-              </p>
-            </form>
-
+        <form method="POST">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required>
           </div>
-        </div>
+
+          <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+          </div>
+
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+
+          <p class="text-center mb-0">
+            Don't have an account?
+            <a href="{{ url_for('auth.register') }}">Sign up</a>
+          </p>
+        </form>
       </div>
     </div>
   </div>
