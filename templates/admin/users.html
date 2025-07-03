@@ -2,14 +2,12 @@
 {% block title %}Users{% endblock %}
 
 {% block content %}
-<!-- Heading -->
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap mt-1">
   <h2 class="mb-2 mb-md-0">Registered Users</h2>
 </div>
 
 <div class="row g-4">
   {% if users|length == 0 %}
-  <!-- No users card -->
   <div class="col-12 col-md-6 col-lg-4">
     <div class="card h-100 shadow-sm text-center">
       <div class="card-body d-flex flex-column justify-content-center">
@@ -24,13 +22,11 @@
       <div class="card h-100 shadow-sm position-relative">
         <div class="card-body">
 
-          <!-- User ID badge -->
           <span class="position-absolute top-0 end-0 border border-primary text-primary px-3 py-1 rounded-2 fw-semibold bg-white"
                 style="font-size: 0.9rem; margin-top: 10px; margin-right: 10px;">
             ID: {{ user.id }}
           </span>
 
-          <!-- User info -->
           <h5 class="card-title mb-2">{{ user.fullname }}</h5>
           <p class="mb-1"><strong>Email:</strong> {{ user.email_id }}</p>
           <p class="mb-1"><strong>Address:</strong> {{ user.address }}</p>

@@ -4,7 +4,6 @@
 {% block content %}
 <div class="container my-4">
 
-  <!-- Header and Search -->
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <h2 class="mb-2 mb-md-0">Parking Lots</h2>
     <form method="GET" action="{{ url_for('user.book') }}" class="d-flex align-items-center" style="min-width: 300px;">
@@ -26,14 +25,12 @@
     </form>
   </div>
 
-  <!-- Parking Lot Cards -->
   <div class="row g-4">
     {% for lot in lots %}
     <div class="col-12 col-md-6 col-lg-4">
       <div class="card h-100 shadow-sm position-relative">
         <div class="card-body position-relative">
 
-          <!-- Price badge with border and rounded-pill -->
           <span 
           class="position-absolute top-0 end-0 text-primary border border-primary px-3 py-1 rounded-2 fw-semibold"
           style="font-size: 0.9rem; margin-top: 10px; margin-right: 10px; background-color: white;">
@@ -75,7 +72,6 @@
     {% endfor %}
   </div>
 
-  <!-- No Results -->
   {% if lots|length == 0 %}
   <div class="text-center mt-5">
     <h5 class="text-muted">No parking lots match your search.</h5>

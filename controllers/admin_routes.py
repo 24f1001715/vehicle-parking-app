@@ -60,7 +60,8 @@ def search():
         elif filter_by == "spot_id":
             try:
                 spot_id = int(q)
-                spots = ParkingSpot.query.filter_by(id=spot_id).all()
+                spots = ParkingSpot.query.options(joinedload(ParkingSpot.lot)).filter_by(id=spot_id).all()
+
                 results = [{"type": "spot", "data": s} for s in spots]
             except ValueError:
                 results = []

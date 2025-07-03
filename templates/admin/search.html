@@ -4,12 +4,10 @@
 {% block content %}
 
 
-  <!-- Heading -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Advanced Search</h2>
   </div>
 
-  <!-- Search Form -->
   <form method="GET" action="{{ url_for('admin.search') }}" class="row g-2 mb-4">
     <div class="col-12 col-md-3">
       <select name="filter_by" class="form-select" required>
@@ -56,14 +54,17 @@
                   </div>
                   <p class="mb-1"><strong>User:</strong> {{ r.user_email }}</p>
                   <p class="mb-1"><strong>Vehicle:</strong> {{ r.vehicle_number }}</p>
+                  {% if r.lot.prime_location_name %}
                   <p class="mb-1"><strong>Lot:</strong> {{ r.lot.prime_location_name }}</p>
                   <p class="mb-1"><strong>Spot ID:</strong> {{ r.spot_id }}</p>
+                  {% endif %}
+
                   <p class="mb-1"><strong>Start:</strong> {{ r.parking_timestamp }}</p>
                   <p class="mb-1"><strong>End:</strong> {{ r.leaving_timestamp or 'In Progress' }}</p>
-                  <p class="mb-0"><strong>Total Cost:</strong> ₹{{ r.total_cost or 'Calculating...' }}</p>
+                  <p class="mb-0"><strong>Total Cost:</strong> {{'₹' + (r.total_cost|string) if r.total_cost else 'Yet to be Paid'}}</p>
 
                 {% elif result.type == 'lot' %}
-                  <h5 class="fw-semibold mb-2">Parking Lot: {{ r.name }}</h5>
+                  <h5 class="fw-semibold mb-2">Parking Lot: {{ r.prime_location_name }}</h5>
                   <p class="mb-1"><strong>Location:</strong> {{ r.address }}</p>
                   <p class="mb-1"><strong>Pin Code:</strong> {{ r.pin_code }}</p>
                   <p class="mb-1"><strong>Max Spots:</strong> {{ r.max_spots }}</p>
@@ -71,7 +72,7 @@
 
                 {% elif result.type == 'spot' %}
                   <h5 class="fw-semibold mb-2">Spot ID: {{ r.id }}</h5>
-                  <p class="mb-1"><strong>Lot:</strong> {{ r.lot.name }}</p>
+                  <p class="mb-1"><strong>Lot:</strong> {{ r.lot.prime_location_name }}</p>
                   <p class="mb-1"><strong>Status:</strong> 
                     <span class="badge 
                       {% if r.status == 'A' %}
