@@ -1,10 +1,12 @@
-from flask import Blueprint, render_template, session, redirect, url_for
-from utils.decorators import admin_required
-from models.models import User, ParkingLot, ParkingSpot, db, Admin, Reservation
-from flask import flash
-from flask import request
+from flask import Blueprint, render_template, session, redirect,url_for, flash, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import func
+from sqlalchemy import func, or_
+from sqlalchemy.orm import joinedload
+from datetime import datetime, timedelta
+from collections import defaultdict
+from utils.decorators import admin_required
+from models.models import User, ParkingLot, ParkingSpot, Reservation, Admin, db
+
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -25,12 +27,24 @@ def home():
 @admin_bp.route('/admin/users')
 @admin_required
 def users():
-    all_users = User.query.all()
-    return render_template('admin/users.html', users=all_users)
+    query = request.args.get('q', '').strip()
+    
+    if query:
+        users = User.query.filter(
+            db.or_(
+                User.fullname.ilike(f"%{query}%"),
+                User.email_id.ilike(f"%{query}%"),
+                User.address.ilike(f"%{query}%"),
+                User.pincode.ilike(f"%{query}%")
+            )
+        ).all()
+    else:
+        users = User.query.all()
 
-from flask import request, render_template
-from models.models import Reservation, ParkingLot, ParkingSpot
-from sqlalchemy.orm import joinedload
+    return render_template('admin/users.html', users=users)
+
+
+
 
 @admin_bp.route('/admin/search')
 @admin_required
@@ -43,7 +57,6 @@ def search():
         q = query.strip()
 
         if filter_by == "user_email":
-            # You can also search User model directly if needed
             reservations = Reservation.query.filter(Reservation.user_email.ilike(f"%{q}%"))\
                 .options(joinedload(Reservation.lot)).all()
             results = [{"type": "reservation", "data": r} for r in reservations]
@@ -78,9 +91,6 @@ def search():
     return render_template('admin/search.html', results=results)
 
 
-from collections import defaultdict
-from datetime import datetime, timedelta
-from sqlalchemy import func
 
 @admin_bp.route('/admin/summary')
 @admin_required
@@ -102,7 +112,7 @@ def summary():
         reserved_spots.append(reserved)
         available_spots.append(available)
 
-    # --- Booking Trends (last 7 days) ---
+    
     today = datetime.now().date()
     start_date = today - timedelta(days=6)
 
@@ -118,7 +128,6 @@ def summary():
         .all()
     )
 
-    # Initialize dicts with all dates to show zero even on no-booking days
     trend_labels = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
     booking_counts = []
     revenues = []
@@ -129,12 +138,17 @@ def summary():
         booking_counts.append(row.count if row else 0)
         revenues.append(float(row.revenue) if row and row.revenue else 0)
 
-    # Revenue per lot
     revenue_per_lot = []
     for lot in lots:
         revenue = db.session.query(db.func.sum(Reservation.total_cost))\
             .filter(Reservation.lot_id == lot.id).scalar()
         revenue_per_lot.append(float(revenue) if revenue else 0)
+
+    
+    total_earnings = sum(revenues)  
+    total_bookings = sum(booking_counts)  
+    top_location = lot_names[revenue_per_lot.index(max(revenue_per_lot))] if revenue_per_lot else "N/A"
+    available_spots_sum = sum(available_spots)
 
 
     return render_template(
@@ -147,7 +161,11 @@ def summary():
         trend_labels=trend_labels,
         booking_counts=booking_counts,
         revenues=revenues, 
-        revenue_per_lot=revenue_per_lot
+        revenue_per_lot=revenue_per_lot,
+        total_earnings=total_earnings,
+        total_bookings=total_bookings,
+        top_location=top_location,
+        available_spots_sum=available_spots_sum
     )
 
 
@@ -222,26 +240,21 @@ def edit_lot(lot_id):
     original_max_spots = lot.max_spots
 
     if request.method == 'POST':
-        # Update basic fields
         lot.prime_location_name = request.form['name']
         lot.address = request.form['address']
         lot.pin_code = request.form['pin_code']
         lot.price = float(request.form['price'])
         new_max_spots = int(request.form['max_spots'])
 
-        # Check if max_spots is changing
         if new_max_spots != original_max_spots:
-            # Check for reserved spots
             reserved_spots = ParkingSpot.query.filter_by(lot_id=lot.id, status='R').count()
             if reserved_spots > 0:
                 error = "Cannot change max spots. Some spots are currently reserved."
                 return render_template('admin/edit_lot.html', lot=lot, error=error)
 
-            # Delete all old spots
             ParkingSpot.query.filter_by(lot_id=lot.id).delete()
             db.session.commit()
 
-            # Update and re-create new spots
             lot.max_spots = new_max_spots
             for i in range(1, new_max_spots + 1):
                 spot = ParkingSpot(lot_id=lot.id, spot_number=i)
@@ -253,7 +266,7 @@ def edit_lot(lot_id):
     return render_template('admin/edit_lot.html', lot=lot)
 
 
-#--view lot
+
 
 @admin_bp.route('/admin/view-lot/<int:lot_id>')
 @admin_required
@@ -265,12 +278,12 @@ def view_lot(lot_id):
 @admin_bp.route('/admin/spot/<int:spot_id>/delete', methods=['GET', 'POST'])
 def spot_delete(spot_id):
     spot = ParkingSpot.query.get_or_404(spot_id)
-    lot = spot.lot  # Access the related ParkingLot
+    lot = spot.lot  
 
     if request.method == 'POST':
-        # Delete the spot
+        
         db.session.delete(spot)
-        # Decrement max_spots for that lot
+        
         if lot.max_spots > 0:
             lot.max_spots -= 1
         db.session.commit()
@@ -283,15 +296,12 @@ def spot_delete(spot_id):
 def add_spot(lot_id):
     lot = ParkingLot.query.get_or_404(lot_id)
 
-    # Get the current max spot_number for this lot directly from the database
     max_spot_number = db.session.query(func.max(ParkingSpot.spot_number))\
                         .filter_by(lot_id=lot.id).scalar() or 0
 
-    # Add the new spot
     new_spot = ParkingSpot(lot_id=lot.id, spot_number=max_spot_number + 1)
     db.session.add(new_spot)
 
-    # Update max_spots based on actual count
     total_spots = db.session.query(ParkingSpot).filter_by(lot_id=lot.id).count()
     lot.max_spots = total_spots
 

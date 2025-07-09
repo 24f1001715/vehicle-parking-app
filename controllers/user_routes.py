@@ -1,21 +1,17 @@
-# routes/user.py
-
-from flask import Blueprint, render_template, session, redirect, url_for, request
+from flask import Blueprint, render_template, session, redirect,url_for, request, flash
 from werkzeug.security import generate_password_hash
-from models.models import db, User, ParkingLot, ParkingSpot, Reservation
-from flask import flash
-from utils.decorators import user_required
 from sqlalchemy import or_, func
+from sqlalchemy.orm import joinedload
+from datetime import datetime, timedelta
+from collections import defaultdict
 import math
+from utils.decorators import user_required
+from models.models import db, User, ParkingLot, ParkingSpot, Reservation
+
 
 user_bp = Blueprint('user', __name__)
 
-from datetime import datetime
-from sqlalchemy.orm import joinedload
 
-from datetime import datetime
-
-from flask import request
 
 @user_bp.route('/user/dashboard')
 @user_required
@@ -76,12 +72,9 @@ def home():
 @user_required
 def summary():
     user_email = session.get("user")
-
     reservations = Reservation.query.filter_by(user_email=user_email).all()
 
-    from datetime import datetime, timedelta
-    from collections import defaultdict
-    from sqlalchemy import func
+    
 
     today = datetime.now().date()
     start_date = today - timedelta(days=6)
@@ -93,15 +86,24 @@ def summary():
     reserved_count = 0
     completed_count = 0
 
+    total_spent = 0
+    last_booking_date = None
+
     for r in reservations:
         try:
-            date_key = datetime.strptime(r.parking_timestamp, '%Y-%m-%d %H:%M:%S').date().strftime('%Y-%m-%d')
+            parking_dt = datetime.strptime(r.parking_timestamp, '%Y-%m-%d %H:%M:%S')
+            date_key = parking_dt.date().strftime('%Y-%m-%d')
         except:
-            continue  # Skip if date is bad
+            continue
 
         if date_key in trend_labels:
             count_map[date_key] += 1
             cost_map[date_key] += r.total_cost if r.total_cost else 0
+
+        total_spent += r.total_cost if r.total_cost else 0
+
+        if not last_booking_date or parking_dt > last_booking_date:
+            last_booking_date = parking_dt
 
         if r.leaving_timestamp:
             completed_count += 1
@@ -125,7 +127,12 @@ def summary():
                            lot_names=lot_names,
                            lot_usage=lot_usage,
                            reserved_count=reserved_count,
-                           completed_count=completed_count)
+                           completed_count=completed_count,
+                           total_bookings=len(reservations),
+                           total_spent=round(total_spent, 2),
+                           active_bookings=reserved_count,
+                           last_booking_date=last_booking_date.strftime('%Y-%m-%d') if last_booking_date else "N/A"
+                           )
 
 
 
@@ -170,26 +177,19 @@ def edit_profile():
         new_email = request.form['email']
 
         if new_email != user.email_id:
-            # Check if new email already exists
             if User.query.filter_by(email_id=new_email).first():
                 return "Email already in use.", 400
 
-            # Update related models
-            from models.models import Reservation  # Import if not at top
 
-            # Update email in reservations
             Reservation.query.filter_by(user_email=user.email_id).update({'user_email': new_email})
 
-            # Update user's email
             user.email_id = new_email
             session['user'] = new_email
 
-        # Update other fields
         user.fullname = request.form['fullname']
         user.address = request.form['address']
         user.pincode = request.form['pincode']
 
-        # Update password if provided
         new_password = request.form.get('password')
         if new_password:
             user.password = generate_password_hash(new_password)
@@ -214,7 +214,7 @@ def confirm_booking(lot_id):
     if request.method == 'POST':
         vehicle_number = request.form['vehicle_number']
         
-        from datetime import datetime
+       
         now = datetime.now()
 
         reservation = Reservation(
@@ -238,7 +238,7 @@ def confirm_booking(lot_id):
 
     return render_template('user/confirm_booking.html', lot=lot, spot=available_spot, user_email=user_email)
 
-from datetime import datetime
+
 
 @user_bp.route('/release/<int:reservation_id>', endpoint='release_spot')
 @user_required

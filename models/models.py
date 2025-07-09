@@ -8,7 +8,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# ------------------------ Models ------------------------
 
 class Admin(db.Model):
     __tablename__ = 'admin'
@@ -77,7 +76,6 @@ class Reservation(db.Model):
     user = db.relationship('User', backref='reservations')
 
 
-# ------------------------ Database Initialization ------------------------
 
 if __name__ == '__main__':
     with app.app_context():
@@ -125,7 +123,6 @@ if __name__ == '__main__':
             "Velachery Point", "Adyar Bay", "Ambattur Junction", "Mylapore Tower"
         ]
 
-        # Seed Users
         if not User.query.first():
             for i, (email, name) in enumerate(user_data):
                 user = User(

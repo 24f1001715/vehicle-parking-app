@@ -3,9 +3,51 @@
 
 {% block content %}
 
-  <h2 class="mb-4 text-center">Admin Summary Dashboard</h2>
+ <div class="text-center mb-4">
+  <h2 class="fw-bold">Admin Dashboard</h2>
+  <p class="text-muted">Monitor parking performance, revenue, and user activity</p>
+</div>
 
-  <!-- Row 1: Spot Status | Booking Trend -->
+<div class="row g-4 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body text-center">
+        <h6 class="card-title mb-2">Total Earnings</h6>
+        <h4 class="text-success">₹{{ "{:,.2f}".format(total_earnings) }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body text-center">
+        <h6 class="card-title mb-2">Total Bookings</h6>
+        <h4 class="text-primary">{{ total_bookings }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body text-center">
+        <h6 class="card-title mb-2">Available Spots</h6>
+        <h4 class="text-warning">{{ available_spots_sum }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body text-center">
+        <h6 class="card-title mb-2">Top Location</h6>
+        <h4 class="text-info">{{ top_location }}</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
   <div class="row g-4 mb-3">
     <div class="col-12 col-md-3">
       <div class="card shadow-sm h-100">
@@ -25,7 +67,6 @@
     </div>
   </div>
 
-  <!-- Row 2: Revenue by Day | Revenue by Lot -->
   <div class="row g-4 mb-3">
     <div class="col-12 col-md-6">
       <div class="card shadow-sm h-100">
@@ -45,7 +86,6 @@
     </div>
   </div>
 
-  <!-- Row 3: Parking Spot Overview -->
   <div class="row g-4 mb-5">
     <div class="col-12">
       <div class="card shadow-sm h-100">

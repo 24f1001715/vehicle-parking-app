@@ -1,0 +1,97 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.navbar-brand {
+  font-weight: bold;
+}
+
+.nav-link.text-secondary:hover {
+  color: #0d6efd !important;
+}
+
+.nav-link.text-danger:hover {
+  color: #a60000 !important;
+}
+
+.navbar-nav .nav-item {
+  padding: 0 0.75rem;
+  position: relative;
+}
+
+@media (min-width: 992px) {
+  .navbar-nav .nav-item.border-right-short::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 15%;
+    height: 70%;
+    width: 1px;
+    background-color: #dee2e6;
+  }
+
+  .navbar-nav .nav-item:last-child::after {
+    display: none;
+  }
+}
+
+@media (max-width: 991.98px) {
+  body {
+    padding-bottom: 80px;
+  }
+
+  .bottom-nav .nav-link {
+    position: relative;
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 0.25rem 0;
+  }
+
+  .bottom-nav .nav-link i {
+    font-size: 1rem;
+  }
+
+  .bottom-nav .nav-link:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 25%;
+    height: 50%;
+    width: 1px;
+    background-color: #dee2e6;
+  }
+
+  main.container {
+    margin-top: 0.5rem !important;
+    margin-bottom: 1rem !important;
+    padding-top: 1.8rem;
+  }
+}
+
+.form-switch .form-check-input {
+  width: 2.5em;
+  height: 1.3em;
+}
+
+.top-bar {
+  min-height: 48px;
+}
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px);
+}
+
+.login-card {
+  max-width: 500px;
+  width: 100%;
+}
+
+@media (max-width: 575.98px) {
+  .login-wrapper {
+    padding-bottom: 8rem;
+    align-items: center;
+  }
+}
