@@ -69,15 +69,13 @@
           </span>
           <span class="d-flex align-items-center">
             <i class="bi bi-currency-rupee me-1 text-secondary"></i>
-            <span
-              ><strong class="ms-1 text-dark">{{ lot.price }}/hr</strong></span
-            >
+            <strong class="ms-1 text-dark">{{ lot.price }}/hr</strong>
           </span>
         </div>
 
         <div class="progress" style="height: 18px">
           <div
-            class="progress-bar {% if percent >= 70 %} bg-success {% elif percent >= 30 %} bg-warning {% else %} bg-danger {% endif %}"
+            class="progress-bar  {% if percent >= 70 %} bg-success {% elif percent >= 30 %} bg-warning {% else %} bg-danger {% endif %}"
             role="progressbar"
             style="width: {{ percent }}%;"
             aria-valuenow="{{ percent|int }}"

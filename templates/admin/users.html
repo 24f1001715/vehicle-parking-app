@@ -5,14 +5,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap mt-1 gap-2">
   <h2 class="fw-bold">Users</h2>
 
-  <form method="GET" action="{{ url_for('admin.users') }}" class="d-flex align-items-center" style="min-width: 300px;">
+  <form method="GET" action="{{ url_for('admin.users') }}" class="d-flex align-items-center" style="min-width: 200px;">
     <input 
       type="text" 
       name="q" 
       class="form-control form-control-sm me-2" 
       placeholder="Search by name, email, address, or pincode" 
       value="{{ request.args.get('q', '') }}" 
-      style="height: 40px; min-width: 250px;"
+      style="height: 40px; min-width: 150px;"
     >
     <button 
       type="submit" 

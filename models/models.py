@@ -128,7 +128,7 @@ if __name__ == '__main__':
                 user = User(
                     email_id=email,
                     fullname=name,
-                    password=generate_password_hash("password123"),
+                    password=generate_password_hash("12345678"),
                     address=f"{100 + i} Example Street",
                     pincode=f"600{str(i+1).zfill(3)}"
                 )
