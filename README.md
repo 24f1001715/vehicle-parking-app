@@ -58,11 +58,3 @@ The app will be accessible at:
 
 ---
 
-## Default Admin Credentials
-
-```
-Email: admin@example.com
-Password: 12345678
-```
-
----
