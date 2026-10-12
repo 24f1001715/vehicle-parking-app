@@ -1,9 +1,13 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///parking.sqlite3')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -83,10 +87,13 @@ if __name__ == '__main__':
         db.create_all()
 
         if not Admin.query.first():
+            admin_email = os.getenv('ADMIN_EMAIL', 'admin@example.com')
+            admin_password = os.getenv('ADMIN_PASSWORD', 'Admin@12345')
+            admin_fullname = os.getenv('ADMIN_FULLNAME', 'Super Admin')
             admin = Admin(
-                email_id="admin@example.com",
-                fullname="Super Admin",
-                password=generate_password_hash("12345678"),
+                email_id=admin_email,
+                fullname=admin_fullname,
+                password=generate_password_hash(admin_password),
                 address="Admin HQ",
                 pincode="600000"
             )

@@ -115,41 +115,38 @@ def summary():
     
     today = datetime.now().date()
     start_date = today - timedelta(days=6)
-
-    reservations = (
-        db.session.query(
-            func.date(Reservation.parking_timestamp).label('date'),
-            func.count().label('count'),
-            func.sum(Reservation.total_cost).label('revenue')
-        )
-        .filter(func.date(Reservation.parking_timestamp) >= start_date)
-        .group_by(func.date(Reservation.parking_timestamp))
-        .order_by(func.date(Reservation.parking_timestamp))
-        .all()
-    )
-
+    start_date_str = start_date.strftime('%Y-%m-%d')
     trend_labels = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
-    booking_counts = []
-    revenues = []
 
-    res_map = {str(row.date): row for row in reservations}
-    for day in trend_labels:
-        row = res_map.get(day)
-        booking_counts.append(row.count if row else 0)
-        revenues.append(float(row.revenue) if row and row.revenue else 0)
+    # Fetch reservations within last 7 days using robust substr comparison for SQLite string dates
+    recent_reservations = Reservation.query.filter(
+        func.substr(Reservation.parking_timestamp, 1, 10) >= start_date_str
+    ).all()
+
+    count_map = {d: 0 for d in trend_labels}
+    rev_map = {d: 0.0 for d in trend_labels}
+
+    for r in recent_reservations:
+        day_key = str(r.parking_timestamp)[:10]
+        if day_key in count_map:
+            count_map[day_key] += 1
+            if r.total_cost:
+                rev_map[day_key] += float(r.total_cost)
+
+    booking_counts = [count_map[day] for day in trend_labels]
+    revenues = [round(rev_map[day], 2) for day in trend_labels]
 
     revenue_per_lot = []
     for lot in lots:
         revenue = db.session.query(db.func.sum(Reservation.total_cost))\
             .filter(Reservation.lot_id == lot.id).scalar()
-        revenue_per_lot.append(float(revenue) if revenue else 0)
+        revenue_per_lot.append(float(revenue) if revenue else 0.0)
 
-    
-    total_earnings = sum(revenues)  
-    total_bookings = sum(booking_counts)  
-    top_location = lot_names[revenue_per_lot.index(max(revenue_per_lot))] if revenue_per_lot else "N/A"
+    # All-time metrics across all records
+    total_earnings = float(db.session.query(db.func.sum(Reservation.total_cost)).scalar() or 0.0)
+    total_bookings = Reservation.query.count()
+    top_location = lot_names[revenue_per_lot.index(max(revenue_per_lot))] if (revenue_per_lot and max(revenue_per_lot) > 0) else "N/A"
     available_spots_sum = sum(available_spots)
-
 
     return render_template(
         'admin/summary.html',
@@ -223,8 +220,19 @@ def delete_parking_lots():
         selected_ids = request.form.getlist('lot_ids')
         if selected_ids:
             for lot_id in selected_ids:
-                lot = ParkingLot.query.get(int(lot_id))
+                try:
+                    lid = int(lot_id)
+                except ValueError:
+                    continue
+                lot = ParkingLot.query.get(lid)
                 if lot:
+                    # Check if any spots are currently reserved
+                    active_count = Reservation.query.filter_by(lot_id=lid, leaving_timestamp=None).count()
+                    if active_count > 0:
+                        flash(f'Cannot delete lot "{lot.prime_location_name}": active reservations present.', 'warning')
+                        continue
+                    Reservation.query.filter_by(lot_id=lid).update({'lot_id': None, 'spot_id': None})
+                    ParkingSpot.query.filter_by(lot_id=lid).delete()
                     db.session.delete(lot)
             db.session.commit()
             return redirect(url_for('admin.home'))
@@ -252,13 +260,20 @@ def edit_lot(lot_id):
                 error = "Cannot change max spots. Some spots are currently reserved."
                 return render_template('admin/edit_lot.html', lot=lot, error=error)
 
-            ParkingSpot.query.filter_by(lot_id=lot.id).delete()
-            db.session.commit()
+            current_spots = ParkingSpot.query.filter_by(lot_id=lot.id).order_by(ParkingSpot.spot_number).all()
+            current_count = len(current_spots)
+
+            if new_max_spots > current_count:
+                max_num = max([s.spot_number for s in current_spots], default=0)
+                for i in range(1, (new_max_spots - current_count) + 1):
+                    db.session.add(ParkingSpot(lot_id=lot.id, spot_number=max_num + i, status='A'))
+            elif new_max_spots < current_count:
+                spots_to_remove = current_spots[new_max_spots:]
+                for s in spots_to_remove:
+                    Reservation.query.filter_by(spot_id=s.id).update({'spot_id': None})
+                    db.session.delete(s)
 
             lot.max_spots = new_max_spots
-            for i in range(1, new_max_spots + 1):
-                spot = ParkingSpot(lot_id=lot.id, spot_number=i)
-                db.session.add(spot)
 
         db.session.commit()
         return redirect(url_for('admin.home'))
@@ -276,15 +291,21 @@ def view_lot(lot_id):
 
 
 @admin_bp.route('/admin/spot/<int:spot_id>/delete', methods=['GET', 'POST'])
+@admin_required
 def spot_delete(spot_id):
     spot = ParkingSpot.query.get_or_404(spot_id)
     lot = spot.lot  
 
     if request.method == 'POST':
-        
+        if spot.status == 'R':
+            flash('Cannot delete spot while it is reserved.', 'danger')
+            return redirect(url_for('admin.view_lot', lot_id=spot.lot_id))
+
+        # Detach foreign key references from reservations to prevent IntegrityError
+        Reservation.query.filter_by(spot_id=spot.id).update({'spot_id': None})
         db.session.delete(spot)
         
-        if lot.max_spots > 0:
+        if lot and lot.max_spots > 0:
             lot.max_spots -= 1
         db.session.commit()
         return redirect(url_for('admin.view_lot', lot_id=lot.id))

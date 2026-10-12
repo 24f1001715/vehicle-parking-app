@@ -34,28 +34,34 @@ def home():
     booking_data = []
 
     for res in reservations:
-        if not res.lot:
-            continue
+        start_time = now
+        if res.parking_timestamp:
+            try:
+                start_time = datetime.strptime(res.parking_timestamp, "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                start_time = now
 
-        start_time = datetime.strptime(res.parking_timestamp, "%Y-%m-%d %H:%M:%S")
         if res.leaving_timestamp:
-            end_time = datetime.strptime(res.leaving_timestamp, "%Y-%m-%d %H:%M:%S")
+            try:
+                end_time = datetime.strptime(res.leaving_timestamp, "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                end_time = now
         else:
             end_time = now
 
         duration_hours = max(math.ceil((end_time - start_time).total_seconds() / 3600), 1)
-        price = res.cost_per_hour or res.lot.price or 0
+        price = res.cost_per_hour or (res.lot.price if res.lot else 0)
         total = round(duration_hours * price, 2)
 
         booking = {
             'id': res.id,
-            'lot_name': res.lot.prime_location_name or 'Unknown',
-            'address': res.lot.address or 'N/A',
-            'pincode': res.lot.pin_code or 'N/A',
+            'lot_name': res.lot.prime_location_name if res.lot else 'Parking Lot',
+            'address': res.lot.address if res.lot else 'N/A',
+            'pincode': res.lot.pin_code if res.lot else 'N/A',
             'price_per_hr': price,
             'booked_at': start_time.strftime("%Y-%m-%d %H:%M"),
             'released': res.leaving_timestamp is not None,
-            'total_cost': res.total_cost or total,
+            'total_cost': res.total_cost if res.total_cost is not None else total,
         }
 
         if filter_option == 'released' and not booking['released']:
@@ -274,9 +280,10 @@ def release_spot_confirm(reservation_id):
     hours = math.ceil((now - start).total_seconds() / 3600)
 
     reservation.leaving_timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-    reservation.total_cost = round(hours * reservation.cost_per_hour, 2)
+    reservation.total_cost = round(hours * (reservation.cost_per_hour or 0), 2)
 
-    reservation.spot.status = 'A'
+    if reservation.spot:
+        reservation.spot.status = 'A'
 
     db.session.commit()
     flash('Spot released successfully!', 'success')

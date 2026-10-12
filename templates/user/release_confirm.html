@@ -14,12 +14,12 @@
 
               <div class="col-md-6">
                 <label class="form-label">Lot:</label>
-                <input type="text" class="form-control bg-light" value="{{ reservation.lot.id }}" readonly>
+                <input type="text" class="form-control bg-light" value="{{ reservation.lot.prime_location_name if reservation.lot else 'Parking Lot' }}" readonly>
               </div>
 
               <div class="col-md-6">
                 <label class="form-label">Spot Number:</label>
-                <input type="text" class="form-control bg-light" value="{{ reservation.spot.spot_number }}" readonly>
+                <input type="text" class="form-control bg-light" value="Spot #{{ reservation.spot.spot_number if reservation.spot else 'N/A' }}" readonly>
               </div>
 
               <div class="col-12">

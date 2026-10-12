@@ -17,8 +17,8 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Spot ID:</label>
-              <input type="text" class="form-control" value="{{ spot.id }}" readonly>
+              <label class="form-label">Spot Number:</label>
+              <input type="text" class="form-control" value="Spot #{{ spot.spot_number if spot else 'N/A' }}" readonly>
             </div>
 
             <div class="mb-3">

@@ -19,9 +19,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-
-    
-    
+    <script>
+      (function() {
+        const theme = localStorage.getItem("parkin_theme") || "light";
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
   </head>
   <body>
     <nav
@@ -31,9 +34,10 @@
         <a class="navbar-brand fw-bold text-primary me-3" href="#">ParkIN</a>
         <div class="form-check form-switch me-auto">
           <input
-            class="form-check-input"
+            class="form-check-input dark-mode-toggle"
             type="checkbox"
             id="darkToggleDesktop"
+            title="Toggle dark mode"
           />
         </div>
 
@@ -106,9 +110,10 @@
       <div class="ms-auto">
         <div class="form-check form-switch mb-0">
           <input
-            class="form-check-input"
+            class="form-check-input dark-mode-toggle"
             type="checkbox"
             id="darkToggleMobile"
+            title="Toggle dark mode"
           />
         </div>
       </div>

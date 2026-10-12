@@ -1,35 +1,32 @@
 (function () {
-  const applyDarkMode = () => {
-    document.documentElement.style.filter = "invert(1) hue-rotate(180deg)";
-    document.body.style.backgroundColor = "#fff";
+  // Synchronously initialize theme to completely prevent page load flickering
+  const savedTheme = localStorage.getItem("parkin_theme") || "light";
+  document.documentElement.setAttribute("data-theme", savedTheme);
+
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("parkin_theme", theme);
+
+    // Sync only dark toggle switches, never other form inputs or checkboxes
+    const toggles = document.querySelectorAll(".dark-mode-toggle");
+    toggles.forEach((t) => {
+      t.checked = theme === "dark";
+    });
   };
 
-  const removeDarkMode = () => {
-    document.documentElement.style.filter = "";
-    document.body.style.backgroundColor = "";
-  };
-
-  const toggleDark = () => {
-    const isDark = document.documentElement.style.filter.includes("invert");
-    if (isDark) {
-      removeDarkMode();
-      localStorage.setItem("darkMode", "off");
-    } else {
-      applyDarkMode();
-      localStorage.setItem("darkMode", "on");
-    }
-
-    const toggles = document.querySelectorAll(".form-check-input");
-    toggles.forEach((t) => (t.checked = !isDark));
+  const toggleTheme = () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    applyTheme(newTheme);
   };
 
   document.addEventListener("DOMContentLoaded", () => {
-    const toggles = document.querySelectorAll(".form-check-input");
-    toggles.forEach((t) => t.addEventListener("change", toggleDark));
-
-    if (localStorage.getItem("darkMode") === "on") {
-      applyDarkMode();
-      toggles.forEach((t) => (t.checked = true));
-    }
+    const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+    const toggles = document.querySelectorAll(".dark-mode-toggle");
+    
+    toggles.forEach((t) => {
+      t.checked = currentTheme === "dark";
+      t.addEventListener("change", toggleTheme);
+    });
   });
 })();
