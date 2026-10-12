@@ -1,23 +1,24 @@
 /* Modern, Native CSS Variable Theme System for ParkIN */
 
 :root {
-  --bg-primary: #f8f9fa;
+  --bg-primary: #f8fafc;
   --bg-surface: #ffffff;
-  --bg-surface-secondary: #f1f3f5;
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --border-color: #dee2e6;
+  --bg-surface-secondary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
   --nav-bg: #ffffff;
   --card-bg: #ffffff;
   --input-bg: #ffffff;
-  --input-border: #ced4da;
-  --input-text: #212529;
-  --brand-primary: #0d6efd;
-  --shadow-color: rgba(0, 0, 0, 0.06);
+  --input-border: #cbd5e1;
+  --input-text: #0f172a;
+  --brand-primary: #0284c7;
+  --brand-primary-hover: #0369a1;
+  --shadow-color: rgba(15, 23, 42, 0.06);
 }
 
 [data-theme="dark"] {
-  --bg-primary: #0f172a;
+  --bg-primary: #0b1120;
   --bg-surface: #1e293b;
   --bg-surface-secondary: #334155;
   --text-primary: #f8fafc;
@@ -29,13 +30,20 @@
   --input-border: #475569;
   --input-text: #f8fafc;
   --brand-primary: #38bdf8;
-  --shadow-color: rgba(0, 0, 0, 0.4);
+  --brand-primary-hover: #7dd3fc;
+  --shadow-color: rgba(0, 0, 0, 0.45);
 }
 
 body {
   background-color: var(--bg-primary) !important;
   color: var(--text-primary) !important;
+  min-height: 100vh;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Base layouts & containers */
+main.site-content {
+  min-height: calc(100vh - 120px);
 }
 
 /* Navbar theming */
@@ -50,6 +58,7 @@ nav.bg-white,
 
 .navbar-brand {
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 [data-theme="dark"] .navbar-brand.text-primary,
@@ -66,12 +75,67 @@ nav.bg-white,
   color: #f1f5f9 !important;
 }
 
+[data-theme="dark"] .bg-white {
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .bg-light {
+  background-color: var(--bg-surface-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .border,
+[data-theme="dark"] .border-top,
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-start,
+[data-theme="dark"] .border-end {
+  border-color: var(--border-color) !important;
+}
+
+/* Badges in dark mode */
+[data-theme="dark"] .badge.bg-light {
+  background-color: var(--bg-surface-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .badge.bg-success-subtle {
+  background-color: rgba(34, 197, 94, 0.2) !important;
+  color: #86efac !important;
+}
+
+/* Theme toggle button styling */
+.dark-mode-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dark-mode-btn:hover {
+  background-color: var(--bg-surface-secondary);
+  color: var(--brand-primary);
+}
+
+.dark-mode-btn .dark-mode-icon {
+  font-size: 1.15rem;
+}
+
 /* Cards & Surfaces */
 .card {
   background-color: var(--card-bg) !important;
   border-color: var(--border-color) !important;
   color: var(--text-primary) !important;
   box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color) !important;
+  border-radius: 0.75rem !important;
 }
 
 .card-header,
@@ -87,6 +151,7 @@ nav.bg-white,
   background-color: var(--input-bg) !important;
   border-color: var(--input-border) !important;
   color: var(--input-text) !important;
+  border-radius: 0.5rem;
 }
 
 .form-control:focus,
@@ -101,7 +166,8 @@ nav.bg-white,
   color: var(--text-secondary) !important;
 }
 
-.form-control.bg-light {
+.form-control.bg-light,
+.form-control[readonly] {
   background-color: var(--bg-surface-secondary) !important;
   border-color: var(--border-color) !important;
   color: var(--text-primary) !important;
@@ -109,8 +175,8 @@ nav.bg-white,
 
 /* Form switch toggle */
 .form-switch .form-check-input {
-  width: 2.5em;
-  height: 1.3em;
+  width: 2.6em;
+  height: 1.35em;
   cursor: pointer;
 }
 
@@ -120,8 +186,8 @@ nav.bg-white,
 }
 
 [data-theme="dark"] .form-check-input:checked {
-  background-color: #0284c7;
-  border-color: #0284c7;
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
 
 /* Tables */
@@ -138,7 +204,9 @@ nav.bg-white,
 
 [data-theme="dark"] thead th {
   background-color: var(--bg-surface-secondary) !important;
+  color: var(--text-primary) !important;
 }
+
 
 /* Navigation Links */
 .nav-link.text-secondary:hover {
@@ -170,6 +238,30 @@ nav.bg-white,
   }
 }
 
+/* Cards & Uniform Heights */
+.card.h-100 {
+  display: flex;
+  flex-direction: column;
+}
+
+.card.h-100 .card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.card-action-bottom {
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+/* Spot grid badges */
+.spot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: 12px;
+}
+
 @media (max-width: 991.98px) {
   body {
     padding-bottom: 80px;
@@ -179,11 +271,11 @@ nav.bg-white,
     position: relative;
     flex: 1;
     font-size: 0.75rem;
-    padding: 0.25rem 0;
+    padding: 0.35rem 0;
   }
 
   .bottom-nav .nav-link i {
-    font-size: 1rem;
+    font-size: 1.15rem;
   }
 
   .bottom-nav .nav-link:not(:last-child)::after {
@@ -197,14 +289,14 @@ nav.bg-white,
   }
 
   main.container {
-    margin-top: 0.5rem !important;
-    margin-bottom: 1rem !important;
-    padding-top: 1.8rem;
+    margin-top: 1rem !important;
+    margin-bottom: 1.5rem !important;
+    padding-top: 3.5rem;
   }
 }
 
 .top-bar {
-  min-height: 48px;
+  min-height: 54px;
 }
 
 .login-wrapper {
@@ -215,16 +307,17 @@ nav.bg-white,
 }
 
 .login-card {
-  max-width: 500px;
+  max-width: 480px;
   width: 100%;
 }
 
 @media (max-width: 575.98px) {
   .login-wrapper {
-    padding-bottom: 8rem;
+    padding-bottom: 5rem;
     align-items: center;
   }
 }
+
 
 /* Dropdown and Modals */
 [data-theme="dark"] .dropdown-menu {

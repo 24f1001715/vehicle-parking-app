@@ -2,53 +2,51 @@
 {% block title %}Spot Details{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
-      <div class="card h-100 shadow-sm position-relative border rounded-3">
-        <div class="card-body px-4 py-4">
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card shadow-sm position-relative border rounded-3">
+      <div class="card-body px-4 py-4">
 
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="card-title mb-0">Spot #{{ spot.spot_number }} Details</h4>
-            <a href="{{ url_for('admin.view_lot', lot_id=spot.lot_id) }}" class="btn btn-sm btn-outline-secondary d-inline d-md-none" title="Close">
-              <i class="bi bi-x-lg"></i>
-            </a>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="card-title mb-0">Spot #{{ spot.spot_number }} Details</h4>
+          <a href="{{ url_for('admin.view_lot', lot_id=spot.lot_id) }}" class="btn btn-sm btn-outline-secondary d-inline d-md-none" title="Close">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        </div>
+
+        <form>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Lot Name:</label>
+            <div class="form-control bg-light">{{ spot.lot.prime_location_name }}</div>
           </div>
 
-          <form>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Customer Email:</label>
+            <div class="form-control bg-light">{{ reservation.user_email }}</div>
+          </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Lot Name:</label>
-              <div class="form-control bg-light">{{ spot.lot.prime_location_name }}</div>
-            </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Vehicle Number:</label>
+            <div class="form-control bg-light">{{ reservation.vehicle_number }}</div>
+          </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Customer Email:</label>
-              <div class="form-control bg-light">{{ reservation.user_email }}</div>
-            </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Parked At:</label>
+            <div class="form-control bg-light">{{ reservation.parking_timestamp }}</div>
+          </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Vehicle Number:</label>
-              <div class="form-control bg-light">{{ reservation.vehicle_number }}</div>
-            </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Price (₹/hr):</label>
+            <div class="form-control bg-light">₹{{ reservation.cost_per_hour }}</div>
+          </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Parked At:</label>
-              <div class="form-control bg-light">{{ reservation.parking_timestamp }}</div>
-            </div>
+          <div class="d-flex justify-content-center mt-3">
+            <a href="{{ url_for('admin.view_lot', lot_id=spot.lot_id) }}" class="btn btn-outline-primary px-4 w-50">Close</a>
+          </div>
 
-            <div class="mb-4">
-              <label class="form-label fw-semibold">Price (₹/hr):</label>
-              <div class="form-control bg-light">₹{{ reservation.cost_per_hour }}</div>
-            </div>
+        </form>
 
-            <div class="d-flex justify-content-center mt-3">
-              <a href="{{ url_for('admin.view_lot', lot_id=spot.lot_id) }}" class="btn btn-outline-primary px-4 w-50">Close</a>
-            </div>
-
-          </form>
-
-        </div>
       </div>
     </div>
   </div>

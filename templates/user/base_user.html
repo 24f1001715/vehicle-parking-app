@@ -18,54 +18,60 @@
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top px-3 py-2 d-none d-lg-flex">
-    <div class="container-fluid align-items-center">
-      <a class="navbar-brand fw-bold text-primary me-3" href="#">ParkIN</a>
-      <div class="form-check form-switch me-auto">
-        <input class="form-check-input dark-mode-toggle" type="checkbox" id="darkToggleDesktop" title="Toggle dark mode">
-      </div>
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top px-3 py-2 d-none d-lg-flex border-bottom">
+    <div class="container align-items-center">
+      <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="{{ url_for('user.home') }}">
+        <i class="bi bi-p-square-fill fs-4"></i> ParkIN
+      </a>
 
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav align-items-center">
+        <ul class="navbar-nav align-items-center gap-1">
           <li class="nav-item border-right-short">
             <a class="nav-link text-secondary" href="{{ url_for('user.home') }}">
-              <i class="bi bi-house-door"></i> Home
+              <i class="bi bi-house-door me-1"></i> Home
             </a>
           </li>
           <li class="nav-item border-right-short">
             <a class="nav-link text-secondary" href="{{ url_for('user.book') }}">
-              <i class="bi bi-calendar-check"></i> Book
+              <i class="bi bi-calendar-check me-1"></i> Book
             </a>
           </li>
           <li class="nav-item border-right-short">
             <a class="nav-link text-secondary" href="{{ url_for('user.summary') }}">
-              <i class="bi bi-graph-up"></i> Summary
+              <i class="bi bi-graph-up me-1"></i> Summary
             </a>
           </li>
           <li class="nav-item border-right-short">
             <a class="nav-link text-secondary" href="{{ url_for('user.edit_profile') }}">
-              <i class="bi bi-person-gear"></i> Edit Profile
+              <i class="bi bi-person-gear me-1"></i> Profile
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item border-right-short">
             <a class="nav-link text-danger fw-semibold" href="{{ url_for('auth.logout') }}">
-              <i class="bi bi-box-arrow-right"></i> Logout
+              <i class="bi bi-box-arrow-right me-1"></i> Logout
             </a>
+          </li>
+          <li class="nav-item ms-2">
+            <button class="dark-mode-btn" type="button" title="Toggle theme" aria-label="Toggle theme">
+              <i class="bi bi-moon-stars dark-mode-icon"></i>
+            </button>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-<nav class="navbar bg-white shadow-sm d-flex d-lg-none align-items-center px-3 py-1 position-fixed top-0 start-0 w-100 z-3" style="min-height: 48px;">
-  <span class="navbar-brand fw-bold text-primary position-absolute top-50 start-50 translate-middle">ParkIN</span>
-  
-  <div class="ms-auto">
-    <div class="form-check form-switch mb-0">
-      <input class="form-check-input dark-mode-toggle" type="checkbox" id="darkToggleMobile" title="Toggle dark mode">
+  <nav class="navbar bg-white shadow-sm d-flex d-lg-none align-items-center px-3 py-2 position-fixed top-0 start-0 w-100 z-3 border-bottom top-bar">
+    <a class="navbar-brand fw-bold text-primary text-decoration-none d-flex align-items-center gap-1" href="{{ url_for('user.home') }}">
+      <i class="bi bi-p-square-fill fs-5"></i> ParkIN
+    </a>
+    
+    <div class="ms-auto d-flex align-items-center">
+      <button class="dark-mode-btn" type="button" title="Toggle theme" aria-label="Toggle theme">
+        <i class="bi bi-moon-stars dark-mode-icon"></i>
+      </button>
     </div>
-  </div>
-</nav>
+  </nav>
 
   <nav class="navbar navbar-light bg-white shadow-lg border-top fixed-bottom d-flex d-lg-none justify-content-around bottom-nav">
     <a class="nav-link text-center text-secondary" href="{{ url_for('user.home') }}">
@@ -85,7 +91,7 @@
     </a>
   </nav>
 
-  <main class="container">
+  <main class="container py-4 site-content">
     {% block content %}{% endblock %}
   </main>
 
