@@ -6,11 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///parking.sqlite3')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 
 class Admin(db.Model):
@@ -82,6 +78,7 @@ class Reservation(db.Model):
 
 
 if __name__ == '__main__':
+    from app import app
     with app.app_context():
         db.drop_all()  
         db.create_all()
