@@ -15,7 +15,10 @@ app = None
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY', 'supersecretkey')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///parking.sqlite3')
+    
+    # On serverless (Vercel), default to /tmp/parking.sqlite3 if running in read-only environment
+    default_db = 'sqlite:////tmp/parking.sqlite3' if os.environ.get('VERCEL') else 'sqlite:///parking.sqlite3'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', default_db)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
@@ -26,7 +29,28 @@ def create_app():
     app.register_blueprint(api_bp)
     app.register_blueprint(ai_assistant_bp)
 
-    app.app_context().push()
+    with app.app_context():
+        # Ensure database tables exist on serverless cold start
+        try:
+            db.create_all()
+            from models.models import Admin
+            from werkzeug.security import generate_password_hash
+            if not Admin.query.first():
+                admin_email = os.getenv('ADMIN_EMAIL', 'admin@example.com')
+                admin_password = os.getenv('ADMIN_PASSWORD', 'Admin@12345')
+                admin_fullname = os.getenv('ADMIN_FULLNAME', 'Super Admin')
+                admin = Admin(
+                    email_id=admin_email,
+                    fullname=admin_fullname,
+                    password=generate_password_hash(admin_password),
+                    address="Admin HQ",
+                    pincode="600000"
+                )
+                db.session.add(admin)
+                db.session.commit()
+        except Exception as e:
+            print(f"Serverless DB init notice: {e}")
+
     return app
 
 app = create_app()
