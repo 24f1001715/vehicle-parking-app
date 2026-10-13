@@ -39,9 +39,9 @@ def create_app():
     with app.app_context():
         # Ensure database tables exist on serverless cold start
         try:
-            db.create_all()
-            from models.models import Admin
+            from models.models import Admin, User, ParkingLot, ParkingSpot, Reservation
             from werkzeug.security import generate_password_hash
+            db.create_all()
             if not Admin.query.first():
                 admin_email = os.getenv('ADMIN_EMAIL', 'admin@example.com')
                 admin_password = os.getenv('ADMIN_PASSWORD', 'Admin@12345')
@@ -55,8 +55,9 @@ def create_app():
                 )
                 db.session.add(admin)
                 db.session.commit()
+                print("Default admin created successfully.")
         except Exception as e:
-            print(f"Serverless DB init notice: {e}")
+            print(f"Serverless DB init error: {e}")
 
     return app
 
