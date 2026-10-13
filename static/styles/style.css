@@ -521,3 +521,19 @@ nav.bg-white,
   }
 }
 
+/* Authentication Page Styles */
+.login-card {
+  border-radius: 1rem !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-card .input-group-text {
+  border-color: var(--input-border) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .login-card .input-group-text {
+  background-color: var(--bg-surface-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
