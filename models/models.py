@@ -14,7 +14,7 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email_id = db.Column(db.String(100), unique=True, nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(200), nullable=True)
     pincode = db.Column(db.String(10), nullable=True)
 
@@ -23,7 +23,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email_id = db.Column(db.String(100), unique=True, nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(200), nullable=True)
     pincode = db.Column(db.String(10), nullable=True)
 
